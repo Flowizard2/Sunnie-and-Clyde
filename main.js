@@ -1,6 +1,6 @@
-import { GUI } from '../../../lib/dat.gui.module.js';
-import { mat4 } from '../../../lib/gl-matrix-module.js';
-import { OBJLoader } from '../../../common/engine/loaders/OBJLoader.js';
+import { GUI } from './lib/dat.gui.module.js';
+import { mat4 } from './lib/gl-matrix-module.js';
+import { OBJLoader } from './common/engine/loaders/OBJLoader.js';
 
 import {
     Camera,
@@ -11,16 +11,16 @@ import {
     Sampler,
     Texture,
     Transform,
-} from '../../../common/engine/core.js';
+} from './common/engine/core.js';
 
-import * as WebGPU from '../../../common/engine/WebGPU.js';
-import { ResizeSystem } from '../../../common/engine/systems/ResizeSystem.js';
-import { UpdateSystem } from '../../../common/engine/systems/UpdateSystem.js';
-import { ImageLoader } from '../../../common/engine/loaders/ImageLoader.js';
-import { JSONLoader } from '../../../common/engine/loaders/JSONLoader.js';
-import { UnlitRenderer } from '../../../common/engine/renderers/UnlitRenderer.js';
+import * as WebGPU from './common/engine/WebGPU.js';
+import { ResizeSystem } from './common/engine/systems/ResizeSystem.js';
+import { UpdateSystem } from './common/engine/systems/UpdateSystem.js';
+import { ImageLoader } from './common/engine/loaders/ImageLoader.js';
+import { JSONLoader } from './common/engine/loaders/JSONLoader.js';
+import { UnlitRenderer } from './common/engine/renderers/UnlitRenderer.js';
 
-import { FirstPersonController } from '../../../common/engine/controllers/FirstPersonController.js';
+import { FirstPersonController } from './common/engine/controllers/FirstPersonController.js';
 
 const canvas = document.querySelector('canvas');
 const renderer = new UnlitRenderer(canvas);
