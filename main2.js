@@ -46,7 +46,7 @@ camera.aabb = {
 
 const light = new Node();
 light.addComponent(new Light({
-    direction: [0.5, -0.7, 1],
+    direction: [0.78, 2.58, 2.8],
     //intensity: 10.0,
 }));
 scene.addChild(light);
@@ -137,16 +137,16 @@ function resize({ displaySize: { width, height }}) {
 new ResizeSystem({ canvas, resize }).start();
 new UpdateSystem({ update, render }).start();
 
-const gui = new GUI();
-gui.add(renderer, 'perFragment');
+// const gui = new GUI();
+// gui.add(renderer, 'perFragment');
 
-const lightSettings = light.getComponentOfType(Light);
-const lightFolder = gui.addFolder('Light');
-lightFolder.open();
-lightFolder.addColor(lightSettings, 'color');
+// const lightSettings = light.getComponentOfType(Light);
+// const lightFolder = gui.addFolder('Light');
+// lightFolder.open();
+// lightFolder.addColor(lightSettings, 'color');
 
-const lightDirection = lightFolder.addFolder('Direction');
-lightDirection.open();
-lightDirection.add(lightSettings.direction, 0, -4, 4).name('x');
-lightDirection.add(lightSettings.direction, 1, -4, 4).name('y');
-lightDirection.add(lightSettings.direction, 2, -4, 4).name('z');
+// const lightDirection = lightFolder.addFolder('Direction');
+// lightDirection.open();
+// lightDirection.add(lightSettings.direction, 0, -4, 4).name('x');
+// lightDirection.add(lightSettings.direction, 1, -4, 4).name('y');
+// lightDirection.add(lightSettings.direction, 2, -4, 4).name('z');
