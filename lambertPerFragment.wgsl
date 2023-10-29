@@ -27,6 +27,7 @@ struct CameraUniforms {
 struct LightUniforms {
     color : vec3f,
     direction : vec3f,
+    //intensity : f32,
 }
 
 struct ModelUniforms {
@@ -65,7 +66,8 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     let L = light.direction;
 
     let lambert = max(dot(N, L), 0);
-    let diffuseLight = lambert * light.color;
+
+    let diffuseLight = lambert * light.color * 1.5;// * light.intensity;
 
     const gamma = 2.2;
     let baseColor = textureSample(baseTexture, baseSampler, input.texcoords) * material.baseFactor;

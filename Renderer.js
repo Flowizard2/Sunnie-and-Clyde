@@ -222,7 +222,7 @@ export class Renderer extends BaseRenderer {
         }
 
         const lightUniformBuffer = this.device.createBuffer({
-            size: 32,
+            size: 32,//36,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
@@ -300,9 +300,13 @@ export class Renderer extends BaseRenderer {
         const lightComponent = light.getComponentOfType(Light);
         const lightColor = vec3.scale(vec3.create(), lightComponent.color, 1 / 255);
         const lightDirection = vec3.normalize(vec3.create(), lightComponent.direction);
+        //const lightIntensity = new Float32Array([lightComponent.intensity]);
+
         const { lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent);
         this.device.queue.writeBuffer(lightUniformBuffer, 0, lightColor);
         this.device.queue.writeBuffer(lightUniformBuffer, 16, lightDirection);
+        //this.device.queue.writeBuffer(lightUniformBuffer, 32, lightIntensity);
+
         this.renderPass.setBindGroup(1, lightBindGroup);
 
         this.renderNode(scene);

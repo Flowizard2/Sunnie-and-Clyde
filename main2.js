@@ -47,6 +47,7 @@ camera.aabb = {
 const light = new Node();
 light.addComponent(new Light({
     direction: [0.5, -0.7, 1],
+    //intensity: 10.0,
 }));
 scene.addChild(light);
 
@@ -149,4 +150,3 @@ lightDirection.open();
 lightDirection.add(lightSettings.direction, 0, -4, 4).name('x');
 lightDirection.add(lightSettings.direction, 1, -4, 4).name('y');
 lightDirection.add(lightSettings.direction, 2, -4, 4).name('z');
-

@@ -27,6 +27,7 @@ struct CameraUniforms {
 struct LightUniforms {
     color : vec3f,
     direction : vec3f,
+    //intensity : f32,
 }
 
 struct ModelUniforms {
@@ -59,7 +60,7 @@ fn vertex(input : VertexInput) -> VertexOutput {
     let L = light.direction;
 
     let lambert = max(dot(N, L), 0);
-    output.diffuseLight = lambert * light.color;
+    output.diffuseLight = lambert * light.color * 1;// * light.intensity;
 
     return output;
 }
