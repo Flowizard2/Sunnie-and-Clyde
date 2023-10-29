@@ -30,8 +30,8 @@ camera.aabb = {
     max: [0.2, 0.2, 0.2],
 };
 
-// const oblak = loader.loadNode('Clyde');
-// oblak.isDynamic = true;
+const oblak = loader.loadNode('Clyde');
+oblak.isDynamic = true;
 loader.loadNode('Circle').isStatic = true;
 loader.loadNode('Circle.001').isStatic = true;
 loader.loadNode('Circle.002').isStatic = true;
@@ -58,8 +58,9 @@ scene.traverse(node => {
 
     console.log("tukaj!");
     const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
+    console.log(boxes);
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
-    console.log(node.nodeIndex);
+    //console.log(node.nodeIndex);
     //console.log(node.aabb);
 });
 
