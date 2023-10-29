@@ -1,3 +1,4 @@
+import { GUI } from './lib/dat.gui.module.js';
 import { ResizeSystem } from './common/engine/systems/ResizeSystem.js';
 import { UpdateSystem } from './common/engine/systems/UpdateSystem.js';
 
@@ -5,7 +6,16 @@ import { GLTFLoader } from './common/engine/loaders/GLTFLoader.js';
 import { UnlitRenderer } from './common/engine/renderers/UnlitRenderer.js';
 import { FirstPersonController } from './common/engine/controllers/FirstPersonController.js';
 
-import { Camera, Model, Transform } from './common/engine/core.js';
+import {
+    Camera,
+    Material,
+    Model,
+    Node,
+    Primitive,
+    Sampler,
+    Texture,
+    Transform,
+} from './common/engine/core.js';
 
 import {
     calculateAxisAlignedBoundingBox,
@@ -14,8 +24,12 @@ import {
 
 import { Physics } from './Physics.js';
 
+import { Renderer } from './Renderer.js';
+import { Light } from './Light.js';
+
 const canvas = document.querySelector('canvas');
-const renderer = new UnlitRenderer(canvas);
+//TT const renderer = new UnlitRenderer(canvas);
+const renderer = new Renderer(canvas); //TT
 await renderer.initialize();
 
 const loader = new GLTFLoader();
@@ -29,6 +43,12 @@ camera.aabb = {
     min: [-0.2, -0.2, -0.2],
     max: [0.2, 0.2, 0.2],
 };
+
+const light = new Node();
+light.addComponent(new Light({
+    direction: [0.5, -0.7, 1],
+}));
+scene.addChild(light);
 
 const oblak = loader.loadNode('Clyde');
 oblak.isDynamic = true;
@@ -80,14 +100,14 @@ document.addEventListener('keydown', (event) => {
 
 const physics = new Physics(scene);
 scene.traverse(node => {
-    console.log("Processing Node:", node)
+    //console.log("Processing Node:", node)
     const model = node.getComponentOfType(Model);
-    console.log(model);
+    //console.log(model);
     if (!model) {
         return;
     }
 
-    console.log("tukaj!");
+    //console.log("tukaj!");
     const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
     //console.log(boxes);
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
@@ -106,7 +126,7 @@ function update(time, dt) {
 }
 
 function render() {
-    renderer.render(scene, camera);
+    renderer.render(scene, camera, light);
 }
 
 function resize({ displaySize: { width, height }}) {
@@ -115,3 +135,18 @@ function resize({ displaySize: { width, height }}) {
 
 new ResizeSystem({ canvas, resize }).start();
 new UpdateSystem({ update, render }).start();
+
+const gui = new GUI();
+gui.add(renderer, 'perFragment');
+
+const lightSettings = light.getComponentOfType(Light);
+const lightFolder = gui.addFolder('Light');
+lightFolder.open();
+lightFolder.addColor(lightSettings, 'color');
+
+const lightDirection = lightFolder.addFolder('Direction');
+lightDirection.open();
+lightDirection.add(lightSettings.direction, 0, -4, 4).name('x');
+lightDirection.add(lightSettings.direction, 1, -4, 4).name('y');
+lightDirection.add(lightSettings.direction, 2, -4, 4).name('z');
+

@@ -20,10 +20,8 @@ export function transformMesh(mesh, matrix,
 
 export function calculateAxisAlignedBoundingBox(mesh) {
     if (mesh.vertices.length === 0) {
-        console.log("Mesh.vertices length is 0.");
         return null;
     } else {
-        console.log("Mesh.vertices length is NOT 0.");
     }
     const initial = {
         min: vec3.clone(mesh.vertices[0].position),
@@ -38,11 +36,8 @@ export function calculateAxisAlignedBoundingBox(mesh) {
 
 export function mergeAxisAlignedBoundingBoxes(boxes) {
     if (boxes.length === 0) {
-        console.log("Boxes length is 0.");
         return null;
     } else {
-        console.log("Boxes length is NOT 0.");
-        console.log(boxes);
     }
     
     const initial = {
