@@ -30,22 +30,22 @@ camera.aabb = {
     max: [0.2, 0.2, 0.2],
 };
 
-// const oblak = loader.loadNode('Clyde');
-// oblak.isDynamic = true;
-// loader.loadNode('Circle').isStatic = true;
-// loader.loadNode('Circle.001').isStatic = true;
-// loader.loadNode('Circle.002').isStatic = true;
-// loader.loadNode('Circle.003').isStatic = true;
-// loader.loadNode('Circle.004').isStatic = true;
-// loader.loadNode('Smreka').isStatic = true;
-// loader.loadNode('Smreka.001').isStatic = true;
-// loader.loadNode('Smreka.002').isStatic = true;
-// loader.loadNode('Smreka.003').isStatic = true;
-// loader.loadNode('Smreka.004').isStatic = true;
-// loader.loadNode('Smreka.005').isStatic = true;
-// loader.loadNode('Listavec').isStatic = true;
-// loader.loadNode('Listavec.001').isStatic = true;
-// loader.loadNode('Listavec.002').isStatic = true;
+const oblak = loader.loadNode('Clyde');
+oblak.isDynamic = true;
+loader.loadNode('Circle').isStatic = true;
+loader.loadNode('Circle.001').isStatic = true;
+loader.loadNode('Circle.002').isStatic = true;
+loader.loadNode('Circle.003').isStatic = true;
+loader.loadNode('Circle.004').isStatic = true;
+loader.loadNode('Smreka').isStatic = true;
+loader.loadNode('Smreka.001').isStatic = true;
+loader.loadNode('Smreka.002').isStatic = true;
+loader.loadNode('Smreka.003').isStatic = true;
+loader.loadNode('Smreka.004').isStatic = true;
+loader.loadNode('Smreka.005').isStatic = true;
+loader.loadNode('Listavec').isStatic = true;
+loader.loadNode('Listavec.001').isStatic = true;
+loader.loadNode('Listavec.002').isStatic = true;
 
 const physics = new Physics(scene);
 scene.traverse(node => {
@@ -57,8 +57,9 @@ scene.traverse(node => {
 
     console.log("tukaj!");
     const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
+    console.log(boxes);
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
-    console.log(node.nodeIndex);
+    //console.log(node.nodeIndex);
     //console.log(node.aabb);
 });
 
