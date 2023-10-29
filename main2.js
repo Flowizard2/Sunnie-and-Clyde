@@ -5,7 +5,7 @@ import { GLTFLoader } from './common/engine/loaders/GLTFLoader.js';
 import { UnlitRenderer } from './common/engine/renderers/UnlitRenderer.js';
 import { FirstPersonController } from './common/engine/controllers/FirstPersonController.js';
 
-import { Camera, Model } from './common/engine/core.js';
+import { Camera, Model, Transform } from './common/engine/core.js';
 
 import {
     calculateAxisAlignedBoundingBox,
@@ -23,7 +23,7 @@ await loader.load('scena.gltf');
 
 const scene = loader.loadScene(loader.defaultScene);
 const camera = loader.loadNode('Camera');
-camera.addComponent(new FirstPersonController(camera, canvas));
+//camera.addComponent(new FirstPersonController(camera, canvas));
 camera.isDynamic = true;
 camera.aabb = {
     min: [-0.2, -0.2, -0.2],
@@ -32,6 +32,8 @@ camera.aabb = {
 
 const oblak = loader.loadNode('Clyde');
 oblak.isDynamic = true;
+//oblak.addComponent(new FirstPersonController(oblak, canvas));
+
 loader.loadNode('Circle').isStatic = true;
 loader.loadNode('Circle.001').isStatic = true;
 loader.loadNode('Circle.002').isStatic = true;
@@ -47,6 +49,35 @@ loader.loadNode('Listavec').isStatic = true;
 loader.loadNode('Listavec.001').isStatic = true;
 loader.loadNode('Listavec.002').isStatic = true;
 
+
+oblak.addComponent(new Transform({
+    translation: [0, 0, 0],
+}));
+const cloudPosition = [0, 0.6935666799545288, 0.9640176892280579];
+
+document.addEventListener('keydown', (event) => {
+    const speed = 0.15; // Adjust the speed as needed
+    const cloudTransform = oblak.getComponentOfType(Transform);
+    
+    switch (event.key) {
+        case 'ArrowUp':
+            cloudPosition[2] -= speed;
+            break;
+        case 'ArrowDown':
+            cloudPosition[2] += speed;
+            break;
+        case 'ArrowLeft':
+            cloudPosition[0] -= speed;
+            break;
+        case 'ArrowRight':
+            cloudPosition[0] += speed;
+            break;
+    }
+
+    // Update the cloud's position.
+    cloudTransform.translation = cloudPosition;
+});
+
 const physics = new Physics(scene);
 scene.traverse(node => {
     console.log("Processing Node:", node)
@@ -58,7 +89,7 @@ scene.traverse(node => {
 
     console.log("tukaj!");
     const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
-    console.log(boxes);
+    //console.log(boxes);
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
     //console.log(node.nodeIndex);
     //console.log(node.aabb);

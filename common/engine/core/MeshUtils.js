@@ -19,6 +19,12 @@ export function transformMesh(mesh, matrix,
 }
 
 export function calculateAxisAlignedBoundingBox(mesh) {
+    if (mesh.vertices.length === 0) {
+        console.log("Mesh.vertices length is 0.");
+        return null;
+    } else {
+        console.log("Mesh.vertices length is NOT 0.");
+    }
     const initial = {
         min: vec3.clone(mesh.vertices[0].position),
         max: vec3.clone(mesh.vertices[0].position),
@@ -31,13 +37,34 @@ export function calculateAxisAlignedBoundingBox(mesh) {
 }
 
 export function mergeAxisAlignedBoundingBoxes(boxes) {
+    if (boxes.length === 0) {
+        console.log("Boxes length is 0.");
+        return null;
+    } else {
+        console.log("Boxes length is NOT 0.");
+        console.log(boxes);
+    }
+    
     const initial = {
         min: vec3.clone(boxes[0].min),
         max: vec3.clone(boxes[0].max),
     };
 
+    // return {
+    //     min: boxes.reduce(({ min: amin }, { min: bmin }) => vec3.min(amin, amin, bmin), initial),
+    //     max: boxes.reduce(({ max: amax }, { max: bmax }) => vec3.max(amax, amax, bmax), initial),
+    // };
+
+    // TO SVA SPREMENILA!!
     return {
-        min: boxes.reduce(({ min: amin }, { min: bmin }) => vec3.min(amin, amin, bmin), initial),
-        max: boxes.reduce(({ max: amax }, { max: bmax }) => vec3.max(amax, amax, bmax), initial),
+        min: boxes.reduce((acc, box) => {
+            vec3.min(acc.min, acc.min, box.min);
+            return acc;
+        }, initial).min,
+        max: boxes.reduce((acc, box) => {
+            vec3.max(acc.max, acc.max, box.max);
+            return acc;
+        }, initial).max,
     };
+
 }
