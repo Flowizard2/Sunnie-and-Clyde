@@ -23,7 +23,9 @@
 				12,
 				13,
 				14,
-				15
+				15,
+				16,
+				17
 			]
 		}
 	],
@@ -44,7 +46,7 @@
 			],
 			"translation":[
 				0,
-				0.6935666799545288,
+				1.2600204944610596,
 				0.9640176892280579
 			]
 		},
@@ -251,6 +253,24 @@
 				0.33974483609199524,
 				4.046973705291748
 			]
+		},
+		{
+			"mesh":15,
+			"name":"Circle.006",
+			"translation":[
+				-7.7953667640686035,
+				0,
+				-3.0727596282958984
+			]
+		},
+		{
+			"mesh":16,
+			"name":"Circle.007",
+			"translation":[
+				-8.659660339355469,
+				0,
+				-4.618246078491211
+			]
 		}
 	],
 	"cameras":[
@@ -263,6 +283,27 @@
 				"znear":0.10000000149011612
 			},
 			"type":"perspective"
+		}
+	],
+	"animations":[
+		{
+			"channels":[
+				{
+					"sampler":0,
+					"target":{
+						"node":0,
+						"path":"translation"
+					}
+				}
+			],
+			"name":"ClydeAction",
+			"samplers":[
+				{
+					"input":98,
+					"interpolation":"LINEAR",
+					"output":99
+				}
+			]
 		}
 	],
 	"materials":[
@@ -660,6 +701,34 @@
 					},
 					"indices":41,
 					"material":6
+				}
+			]
+		},
+		{
+			"name":"Circle.006",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":92,
+						"NORMAL":93,
+						"TEXCOORD_0":94
+					},
+					"indices":19,
+					"material":4
+				}
+			]
+		},
+		{
+			"name":"Circle.007",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":95,
+						"NORMAL":96,
+						"TEXCOORD_0":97
+					},
+					"indices":23,
+					"material":4
 				}
 			]
 		}
@@ -1548,6 +1617,80 @@
 			"componentType":5126,
 			"count":559,
 			"type":"VEC2"
+		},
+		{
+			"bufferView":92,
+			"componentType":5126,
+			"count":600,
+			"max":[
+				16.454483032226562,
+				0.08308777958154678,
+				1
+			],
+			"min":[
+				-0.8660253882408142,
+				0,
+				-1
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":93,
+			"componentType":5126,
+			"count":600,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":94,
+			"componentType":5126,
+			"count":600,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":95,
+			"componentType":5126,
+			"count":660,
+			"max":[
+				18.186532974243164,
+				0.08308777958154678,
+				1
+			],
+			"min":[
+				-0.8660253882408142,
+				0,
+				-1
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":96,
+			"componentType":5126,
+			"count":660,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":97,
+			"componentType":5126,
+			"count":660,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":98,
+			"componentType":5126,
+			"count":119,
+			"max":[
+				4.916666666666667
+			],
+			"min":[
+				0
+			],
+			"type":"SCALAR"
+		},
+		{
+			"bufferView":99,
+			"componentType":5126,
+			"count":119,
+			"type":"VEC3"
 		}
 	],
 	"bufferViews":[
@@ -2102,6 +2245,52 @@
 			"byteLength":4472,
 			"byteOffset":429800,
 			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":7200,
+			"byteOffset":434272,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":7200,
+			"byteOffset":441472,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":4800,
+			"byteOffset":448672,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":7920,
+			"byteOffset":453472,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":7920,
+			"byteOffset":461392,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":5280,
+			"byteOffset":469312,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":476,
+			"byteOffset":474592
+		},
+		{
+			"buffer":0,
+			"byteLength":1428,
+			"byteOffset":475068
 		}
 	],
 	"samplers":[
@@ -2112,7 +2301,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":434272,
+			"byteLength":476496,
 			"uri":"scena.bin"
 		}
 	]
