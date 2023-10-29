@@ -34,17 +34,14 @@ camera.aabb = {
 // oblak.isDynamic = true;
 loader.loadNode('Circle').isStatic = true;
 loader.loadNode('Circle.001').isStatic = true;
-
-// loader.loadNode('Circle').isStatic = true;
-// loader.loadNode('Circle.001').isStatic = true;
-// loader.loadNode('Circle.002').isStatic = true;
-// loader.loadNode('Circle.003').isStatic = true;
-// loader.loadNode('Circle.004').isStatic = true;
+loader.loadNode('Circle.002').isStatic = true;
+loader.loadNode('Circle.003').isStatic = true;
+loader.loadNode('Circle.004').isStatic = true;
 // loader.loadNode('Tree1').isStatic = true;
 // loader.loadNode('Tree1.001').isStatic = true;
-// loader.loadNode('Tree1.002').isStatic = true;
-// loader.loadNode('Tree1.003').isStatic = true;
-// loader.loadNode('Tree1.004').isStatic = true;
+loader.loadNode('Tree1.002').isStatic = true;
+loader.loadNode('Tree1.003').isStatic = true;
+loader.loadNode('Tree1.004').isStatic = true;
 // loader.loadNode('Tree1.005').isStatic = true;
 // loader.loadNode('Tree2').isStatic = true;
 // loader.loadNode('Tree2.001').isStatic = true;
@@ -53,12 +50,15 @@ loader.loadNode('Circle.001').isStatic = true;
 const physics = new Physics(scene);
 scene.traverse(node => {
     const model = node.getComponentOfType(Model);
+    console.log(model);
     if (!model) {
         return;
     }
 
     const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
+    
+    console.log(node.aabb);
 });
 
 function update(time, dt) {
