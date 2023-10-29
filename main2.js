@@ -32,23 +32,24 @@ camera.aabb = {
 
 // const oblak = loader.loadNode('Clyde');
 // oblak.isDynamic = true;
-// loader.loadNode('Circle').isStatic = true;
-// loader.loadNode('Circle.001').isStatic = true;
-// loader.loadNode('Circle.002').isStatic = true;
-// loader.loadNode('Circle.003').isStatic = true;
-// loader.loadNode('Circle.004').isStatic = true;
-// loader.loadNode('Smreka').isStatic = true;
-// loader.loadNode('Smreka.001').isStatic = true;
-// loader.loadNode('Smreka.002').isStatic = true;
-// loader.loadNode('Smreka.003').isStatic = true;
-// loader.loadNode('Smreka.004').isStatic = true;
-// loader.loadNode('Smreka.005').isStatic = true;
-// loader.loadNode('Listavec').isStatic = true;
-// loader.loadNode('Listavec.001').isStatic = true;
-// loader.loadNode('Listavec.002').isStatic = true;
+loader.loadNode('Circle').isStatic = true;
+loader.loadNode('Circle.001').isStatic = true;
+loader.loadNode('Circle.002').isStatic = true;
+loader.loadNode('Circle.003').isStatic = true;
+loader.loadNode('Circle.004').isStatic = true;
+loader.loadNode('Smreka').isStatic = true;
+loader.loadNode('Smreka.001').isStatic = true;
+loader.loadNode('Smreka.002').isStatic = true;
+loader.loadNode('Smreka.003').isStatic = true;
+loader.loadNode('Smreka.004').isStatic = true;
+loader.loadNode('Smreka.005').isStatic = true;
+loader.loadNode('Listavec').isStatic = true;
+loader.loadNode('Listavec.001').isStatic = true;
+loader.loadNode('Listavec.002').isStatic = true;
 
 const physics = new Physics(scene);
 scene.traverse(node => {
+    console.log("Processing Node:", node)
     const model = node.getComponentOfType(Model);
     console.log(model);
     if (!model) {
