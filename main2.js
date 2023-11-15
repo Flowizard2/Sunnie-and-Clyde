@@ -27,6 +27,15 @@ import { Physics } from './Physics.js';
 import { Renderer } from './Renderer.js';
 import { Light } from './Light.js';
 
+window.onload = function() {
+    var audioElement = document.getElementById("pesem");
+    
+    // Play audio, but be prepared for it to be blocked due to browser's autoplay policy
+    audioElement.play().catch(function(error) {
+        console.error("Playback was prevented:", error);
+    });
+}
+
 const canvas = document.querySelector('canvas');
 //TT const renderer = new UnlitRenderer(canvas);
 const renderer = new Renderer(canvas); //TT
@@ -74,7 +83,9 @@ loader.loadNode('Listavec.002').isStatic = true;
 oblak.addComponent(new Transform({
     translation: [0, 0, 0],
 }));
-const cloudPosition = [0, 0.6935666799545288, 0.9640176892280579];
+const cloudPosition = [0,
+    1.2600204944610596,
+    0.9640176892280579];
 
 document.addEventListener('keydown', (event) => {
     const speed = 0.15; // Adjust the speed as needed
