@@ -116,6 +116,78 @@ scene.traverse(node => {
     //console.log(node.aabb);
 });
 
+
+function getNodeByName(nodeName) {
+    // Assuming `scene` is the object containing your nodes
+    for (const node of scene.nodes) {
+        if (node.name === nodeName) {
+            return node;
+        }
+    }
+    return null; // Return null if the node is not found
+}
+
+// Assuming you have a function to get a node's current position
+function getNodePosition(nodeName) {
+    // Assuming you have a function to access a node by name in your scene
+    const objekt = scene.getNodeByName(nodeName);
+
+    if (objekt) {
+        return objekt.translation;
+    } else {
+        console.error(`Node not found: ${nodeName}`);
+        return null;
+    }
+}
+
+// Map of tile names to their material indices
+const tileMaterialMap = {
+    "Circle": 4, // Example, assuming "Circle" uses material index 4
+    "Circle.001": 4,
+    "Circle.002": 4,
+    "Circle.003": 4,
+    "Circle.004": 4,
+    "Circle.006": 4,
+    "Circle.007": 4,
+};
+
+// Timers for each tile
+const tileTimers = {};
+Object.keys(tileMaterialMap).forEach(tile => tileTimers[tile] = 0);
+
+// Function to check if Clyde is above a tile
+function isClydeAboveTile(clydePosition, tilePosition, threshold = 1) {
+    // Check if Clyde is within a certain distance (threshold) in the 'x' and 'y' axes
+    const distanceX = Math.abs(clydePosition[0] - tilePosition[0]);
+    const distanceY = Math.abs(clydePosition[1] - tilePosition[1]);
+
+    return distanceX <= threshold && distanceY <= threshold;
+}
+
+// Function to change the texture of a tile
+function changeTileTexture(tileName, newTextureIndex) {
+    const materialIndex = tileMaterialMap[tileName];
+    // Modify the material's baseColorTexture
+    // Example: materials[materialIndex].pbrMetallicRoughness.baseColorTexture.index = newTextureIndex;
+    tile = getNodeByName(tileName);
+    
+    const meshIndex = tileNode.mesh;
+    const mesh = scene.meshes[meshIndex];
+
+    mesh.primitives[0].material = newTextureIndex;
+
+    // mesh.primitives.forEach(primitive => {
+    //     const materialIndex = primitive.material;
+    //     const material = scene.materials[materialIndex];
+
+    //     if (material && material.pbrMetallicRoughness && material.pbrMetallicRoughness.baseColorTexture) {
+    //         material.pbrMetallicRoughness.baseColorTexture.index = newTextureIndex;
+    //     } else {
+    //         console.error(`Material or texture not found for tile: ${tileName}`);
+    //     }
+    // });
+}
+
 function update(time, dt) {
     scene.traverse(node => {
         for (const component of node.components) {
@@ -124,6 +196,22 @@ function update(time, dt) {
     });
 
     physics.update(time, dt);
+
+    // Ce je Clyde nad tile-om, se spremeni texture tile-a
+    const clydePosition = getNodePosition("Clyde");
+
+    Object.keys(tileTimers).forEach(tile => {
+        const tilePosition = getNodePosition(tile);
+        if (isClydeAboveTile(clydePosition, tilePosition)) {
+            tileTimers[tile] += dt;
+            if (tileTimers[tile] >= 3) {
+                changeTileTexture(tile, 6 /* newTextureIndex */);
+                tileTimers[tile] = 0; // Reset the timer
+            }
+        } else {
+            tileTimers[tile] = 0; // Reset if Clyde moves away
+        }
+    });
 }
 
 function render() {

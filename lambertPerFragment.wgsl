@@ -67,14 +67,35 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
 
     let lambert = max(dot(N, L), 0);
 
+    let shadowColor = vec3<f32>(0.008, 0.243, 0.541); // Pure blue
+
     let diffuseLight = lambert * light.color * 1.5;// * light.intensity;
+
+    let shadowFactor = 1.0 - lambert;
 
     const gamma = 2.2;
     let baseColor = textureSample(baseTexture, baseSampler, input.texcoords) * material.baseFactor;
     let albedo = pow(baseColor.rgb, vec3(gamma));
-    let finalColor = albedo * diffuseLight;
+    //let colorWithShadow = mix(albedo, shadowColor, shadowFactor);
+    //let finalColor = albedo * diffuseLight;
+    //let finalColor = colorWithShadow * diffuseLight;
 
-    output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
+    // Check if the surface is in shadow based on the lambert term
+    if (lambert > 0.4) {
+        // Surface is directly lit. Use the standard lighting model.
+        let diffuseLight = lambert * light.color;
+        let finalColor = albedo * diffuseLight;
+        output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
+    } else if(lambert > 0.0) {
+        let colorWithShadow = mix(albedo, shadowColor, shadowFactor);
+        let finalColor = colorWithShadow * diffuseLight;
+        output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
+    } else {
+        let finalColor = shadowColor;
+        output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
+    }
+
+    //output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
 
     return output;
 }
