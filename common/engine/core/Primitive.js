@@ -8,4 +8,9 @@ export class Primitive {
         this.material = material;
     }
 
+    // SPREMEMBA
+    addMaterial(material) {
+        this.material = material;
+    }
+
 }

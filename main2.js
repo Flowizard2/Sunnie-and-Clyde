@@ -44,7 +44,12 @@ await renderer.initialize();
 const loader = new GLTFLoader();
 await loader.load('scena.gltf');
 
+const rjavaMaterial = loader.loadMaterial(5);
+
+//console.log("Default Scene: ", loader.defaultScene);
 const scene = loader.loadScene(loader.defaultScene);
+console.log("Scene: ", scene);
+//console.log("Default Scene: ", loader.defaultScene);
 const camera = loader.loadNode('Camera');
 //camera.addComponent(new FirstPersonController(camera, canvas));
 camera.isDynamic = true;
@@ -61,6 +66,7 @@ light.addComponent(new Light({
 scene.addChild(light);
 
 const oblak = loader.loadNode('Clyde');
+// console.log("OBLAK: ", oblak);
 oblak.isDynamic = true;
 //oblak.addComponent(new FirstPersonController(oblak, canvas));
 
@@ -69,6 +75,8 @@ loader.loadNode('Circle.001').isStatic = true;
 loader.loadNode('Circle.002').isStatic = true;
 loader.loadNode('Circle.003').isStatic = true;
 loader.loadNode('Circle.004').isStatic = true;
+loader.loadNode('Circle.006').isStatic = true;
+loader.loadNode('Circle.007').isStatic = true;
 loader.loadNode('Smreka').isStatic = true;
 loader.loadNode('Smreka.001').isStatic = true;
 loader.loadNode('Smreka.002').isStatic = true;
@@ -112,7 +120,7 @@ document.addEventListener('keydown', (event) => {
 
 const physics = new Physics(scene);
 scene.traverse(node => {
-    //console.log("Processing Node:", node)
+    // console.log("Processing Node:", node.name)
     const model = node.getComponentOfType(Model);
     //console.log(model);
     if (!model) {
@@ -129,22 +137,32 @@ scene.traverse(node => {
 
 
 function getNodeByName(nodeName) {
+    // console.log("Node name:", nodeName)
     // Assuming `scene` is the object containing your nodes
-    for (const node of scene.nodes) {
+    let foundNode = null;
+
+    //foundNode = loader.findByNameOrIndex(scene.children, nodeName);
+
+    scene.traverse(node => {
+        //console.log("Node name:", node.name)
         if (node.name === nodeName) {
-            return node;
+            foundNode = node;
+            //console.log("Nodefound: ", foundNode);
+            return foundNode;
         }
-    }
-    return null; // Return null if the node is not found
-}
+    });
+
+    return foundNode;
+}   
 
 // Assuming you have a function to get a node's current position
 function getNodePosition(nodeName) {
     // Assuming you have a function to access a node by name in your scene
-    const objekt = scene.getNodeByName(nodeName);
+    const objekt = getNodeByName(nodeName);
 
     if (objekt) {
-        return objekt.translation;
+        //console.log("Translation ", objekt.getComponentOfType(Transform).translation)
+        return objekt.getComponentOfType(Transform).translation;
     } else {
         console.error(`Node not found: ${nodeName}`);
         return null;
@@ -165,27 +183,35 @@ const tileMaterialMap = {
 // Timers for each tile
 const tileTimers = {};
 Object.keys(tileMaterialMap).forEach(tile => tileTimers[tile] = 0);
+//console.log("tiletimers: ", tileTimers);
 
 // Function to check if Clyde is above a tile
-function isClydeAboveTile(clydePosition, tilePosition, threshold = 1) {
+function isClydeAboveTile(clydePosition, tilePosition, threshold = 1.27) {
     // Check if Clyde is within a certain distance (threshold) in the 'x' and 'y' axes
     const distanceX = Math.abs(clydePosition[0] - tilePosition[0]);
     const distanceY = Math.abs(clydePosition[1] - tilePosition[1]);
+    console.log("distanceX: ", distanceX);
+    console.log("distanceY: ", distanceY);
 
     return distanceX <= threshold && distanceY <= threshold;
 }
 
 // Function to change the texture of a tile
 function changeTileTexture(tileName, newTextureIndex) {
-    const materialIndex = tileMaterialMap[tileName];
-    // Modify the material's baseColorTexture
-    // Example: materials[materialIndex].pbrMetallicRoughness.baseColorTexture.index = newTextureIndex;
-    tile = getNodeByName(tileName);
+    // const materialIndex = tileMaterialMap[tileName];
     
-    const meshIndex = tileNode.mesh;
-    const mesh = scene.meshes[meshIndex];
+    const tile = getNodeByName(tileName)
+    // console.log("TILE: ", tile);
+    //console.log("TILE null");    
 
-    mesh.primitives[0].material = newTextureIndex;
+    // const meshIndex = tileNode.mesh;
+    // const mesh = scene.meshes[meshIndex];
+
+    // mesh.primitives[0].material = newTextureIndex;
+
+    const tileModel = tile.getComponentOfType(Model);
+    tileModel.primitives[0].addMaterial(rjavaMaterial);
+
 
     // mesh.primitives.forEach(primitive => {
     //     const materialIndex = primitive.material;
@@ -212,7 +238,9 @@ function update(time, dt) {
     const clydePosition = getNodePosition("Clyde");
 
     Object.keys(tileTimers).forEach(tile => {
+        //console.log("tile: ", tile);
         const tilePosition = getNodePosition(tile);
+        
         if (isClydeAboveTile(clydePosition, tilePosition)) {
             tileTimers[tile] += dt;
             if (tileTimers[tile] >= 3) {

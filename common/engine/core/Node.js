@@ -1,9 +1,15 @@
 export class Node {
 
     constructor() {
+        this.name = ""  // SPREMEMBA
         this.children = [];
         this.parent = null;
         this.components = [];
+    }
+
+    // SPREMEMBA
+    addName(name) {
+        this.name = name;
     }
 
     addChild(node) {
