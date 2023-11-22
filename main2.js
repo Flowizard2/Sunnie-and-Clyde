@@ -42,9 +42,10 @@ const renderer = new Renderer(canvas); //TT
 await renderer.initialize();
 
 const loader = new GLTFLoader();
-await loader.load('scena.gltf');
+await loader.load('scena2.gltf');
 
-const rjavaMaterial = loader.loadMaterial(5);
+const rjavaMaterial = loader.loadMaterial(4);
+// const zelenaMaterial = loader.loadMaterial(???);
 
 //console.log("Default Scene: ", loader.defaultScene);
 const scene = loader.loadScene(loader.defaultScene);
@@ -70,30 +71,43 @@ const oblak = loader.loadNode('Clyde');
 oblak.isDynamic = true;
 //oblak.addComponent(new FirstPersonController(oblak, canvas));
 
-loader.loadNode('Circle').isStatic = true;
-loader.loadNode('Circle.001').isStatic = true;
-loader.loadNode('Circle.002').isStatic = true;
-loader.loadNode('Circle.003').isStatic = true;
-loader.loadNode('Circle.004').isStatic = true;
-loader.loadNode('Circle.006').isStatic = true;
-loader.loadNode('Circle.007').isStatic = true;
-loader.loadNode('Smreka').isStatic = true;
-loader.loadNode('Smreka.001').isStatic = true;
-loader.loadNode('Smreka.002').isStatic = true;
-loader.loadNode('Smreka.003').isStatic = true;
-loader.loadNode('Smreka.004').isStatic = true;
-loader.loadNode('Smreka.005').isStatic = true;
-loader.loadNode('Listavec').isStatic = true;
-loader.loadNode('Listavec.001').isStatic = true;
-loader.loadNode('Listavec.002').isStatic = true;
+// oblak.addComponent(new Transform({
+//     translation: [0,
+//         1.2600204944610596,
+//         0.9640176892280579],
+// }));
+// HANA! Probi ce lahko tko: const cloudPosition = oblak.getComponentOfType(Transform).translation
+// Pa das tam gor v translation te koordinate, k so tle spodi.
+const cloudPosition = oblak.getComponentOfType(Transform).translation
+
+const sunnie = loader.loadNode('Sunnie');
+sunnie.isDynamic = true;
+
+// sunnie.addComponent(new Transform({
+//     translation: [-1.558300256729126,
+//         1.6659927368164062,
+//         4.757515907287598] }));
+const sunniePosition = sunnie.getComponentOfType(Transform).translation
+
+// loader.loadNode('Circle').isStatic = true;
+// loader.loadNode('Circle.001').isStatic = true;
+// loader.loadNode('Circle.002').isStatic = true;
+// loader.loadNode('Circle.003').isStatic = true;
+// loader.loadNode('Circle.004').isStatic = true;
+// loader.loadNode('Circle.006').isStatic = true;
+// loader.loadNode('Circle.007').isStatic = true;
+// loader.loadNode('Smreka').isStatic = true;
+// loader.loadNode('Smreka.001').isStatic = true;
+// loader.loadNode('Smreka.002').isStatic = true;
+// loader.loadNode('Smreka.003').isStatic = true;
+// loader.loadNode('Smreka.004').isStatic = true;
+// loader.loadNode('Smreka.005').isStatic = true;
+// loader.loadNode('Listavec').isStatic = true;
+// loader.loadNode('Listavec.001').isStatic = true;
+// loader.loadNode('Listavec.002').isStatic = true;
 
 
-oblak.addComponent(new Transform({
-    translation: [0, 0, 0],
-}));
-const cloudPosition = [0,
-    1.2600204944610596,
-    0.9640176892280579];
+
 
 document.addEventListener('keydown', (event) => {
     const speed = 0.15; // Adjust the speed as needed
@@ -129,10 +143,10 @@ scene.traverse(node => {
 
     //console.log("tukaj!");
     const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
-    //console.log(boxes);
+    console.log("Boxes: ", boxes);
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
     //console.log(node.nodeIndex);
-    //console.log(node.aabb);
+    console.log("node.aabb: ", node.aabb);
 });
 
 
@@ -171,13 +185,85 @@ function getNodePosition(nodeName) {
 
 // Map of tile names to their material indices
 const tileMaterialMap = {
-    "Circle": 4, // Example, assuming "Circle" uses material index 4
-    "Circle.001": 4,
-    "Circle.002": 4,
-    "Circle.003": 4,
-    "Circle.004": 4,
-    "Circle.006": 4,
-    "Circle.007": 4,
+    // 1. vrsta
+    "Polje_1_0": 4, // Example, assuming "Circle" uses material index 4
+    "Polje_1_1": 4,
+    "Polje_1_2": 4,
+    "Polje_1_3": 4,
+    "Polje_1_4": 4,
+    "Polje_1_5": 4,
+    "Polje_1_6": 4,
+    "Polje_1_7": 4,
+    "Polje_1_8": 4,
+    // 2. vrsta
+    "Polje_2_0": 4,
+    "Polje_2_1": 4,
+    "Polje_2_2": 4,
+    "Polje_2_3": 4,
+    "Polje_2_4": 4,
+    "Polje_2_5": 4,
+    "Polje_2_6": 4,
+    "Polje_2_7": 4,
+    "Polje_2_8": 4,
+    "Polje_2_9": 4,
+    // 3. vrsta
+    "Polje_3_0": 4,
+    "Polje_3_1": 4,
+    "Polje_3_2": 4,
+    "Polje_3_3": 4,
+    "Polje_3_4": 4,
+    "Polje_3_5": 4,
+    "Polje_3_6": 4,
+    "Polje_3_7": 4,
+    "Polje_3_8": 4,
+    "Polje_3_9": 4,
+    "Polje_3_10": 4,
+    // 4. vrsta
+    "Polje_4_0": 4,
+    "Polje_4_1": 4,
+    "Polje_4_2": 4,
+    "Polje_4_3": 4,
+    "Polje_4_4": 4,
+    "Polje_4_5": 4,
+    "Polje_4_6": 4,
+    "Polje_4_7": 4,
+    "Polje_4_8": 4,
+    "Polje_4_9": 4,
+    // 5. vrsta
+    "Polje_5_0": 4,
+    "Polje_5_1": 4,
+    "Polje_5_2": 4,
+    "Polje_5_3": 4,
+    "Polje_5_4": 4,
+    "Polje_5_5": 4,
+    "Polje_5_6": 4,
+    "Polje_5_7": 4,
+    "Polje_5_8": 4,
+    "Polje_5_9": 4,
+    "Polje_5_10": 4,
+    // 6. vrsta
+    "Polje_6_0": 4,
+    "Polje_6_1": 4,
+    "Polje_6_2": 4,
+    "Polje_6_3": 4,
+    "Polje_6_4": 4,
+    "Polje_6_5": 4,
+    "Polje_6_6": 4,
+    "Polje_6_7": 4,
+    "Polje_6_8": 4,
+    "Polje_6_9": 4,
+    // 7. vrsta
+    "Polje_7_0": 4,
+    "Polje_7_1": 4,
+    "Polje_7_2": 4,
+    "Polje_7_3": 4,
+    "Polje_7_4": 4,
+    "Polje_7_5": 4,
+    "Polje_7_6": 4,
+    "Polje_7_7": 4,
+    "Polje_7_8": 4,
+    "Polje_7_9": 4,
+    "Polje_7_10": 4,
 };
 
 // Timers for each tile
@@ -190,8 +276,8 @@ function isClydeAboveTile(clydePosition, tilePosition, threshold = 1.27) {
     // Check if Clyde is within a certain distance (threshold) in the 'x' and 'y' axes
     const distanceX = Math.abs(clydePosition[0] - tilePosition[0]);
     const distanceY = Math.abs(clydePosition[1] - tilePosition[1]);
-    console.log("distanceX: ", distanceX);
-    console.log("distanceY: ", distanceY);
+    //console.log("distanceX: ", distanceX);
+    //console.log("distanceY: ", distanceY);
 
     return distanceX <= threshold && distanceY <= threshold;
 }
@@ -236,6 +322,8 @@ function update(time, dt) {
 
     // Ce je Clyde nad tile-om, se spremeni texture tile-a
     const clydePosition = getNodePosition("Clyde");
+    const sunniePosition2 = getNodePosition("Sunnie");
+    //console.log("SunniePosition: ", sunniePosition2);
 
     Object.keys(tileTimers).forEach(tile => {
         //console.log("tile: ", tile);

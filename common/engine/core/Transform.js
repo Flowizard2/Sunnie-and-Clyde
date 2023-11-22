@@ -6,6 +6,9 @@ export class Transform {
         rotation = [0, 0, 0, 1],
         translation = [0, 0, 0],
         scale = [1, 1, 1],
+        // rotation,
+        // translation,
+        // scale,
         matrix,
     } = {}) {
         this.rotation = rotation;
