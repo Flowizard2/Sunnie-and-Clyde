@@ -439,6 +439,7 @@ export class GLTFLoader {
         node.addComponent(new Transform(gltfSpec));
 
         node.addName(gltfSpec.name);    // SPREMEMBA
+        node.isStatic = true;    // SPREMEMBA
 
         if (gltfSpec.children) {
             for (const childIndex of gltfSpec.children) {
