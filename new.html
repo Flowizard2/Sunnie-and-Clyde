@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>canvas, slika na ozadju</title>
+<style>
+#btn1 {position:absolute;left:80px; top:28px; width:55px; height:55px}
+#btn2 {position:absolute;left:190px; top:28px;  width:55px; height:55px}
+#btn3 {position:absolute;left:300px; top:28px;  width:55px; height:55px}
+div#igra {position:relative; width:512;height;512}
+</style>
+</head>
+<body>
+
+<div id="igra">
+<input id='btn1' type="image" onClick="funkcija1()" src="zajec.png"   >
+<input id='btn2' type="image" onClick="odpriOkno()" src="luna.png">
+<input id='btn3' type="image" onClick="funkcija3()" src="winter.png" >
+<canvas id='canvas' width='512' height='512' >
+            Your browser does not support HTML5 Canvas.
+                  
+      </canvas>
+</div>
+<script>
+var canvas = document.getElementById("canvas"),
+    ctx = canvas.getContext("2d");
+//canvas.width = 512;
+//canvas.height = 512;
+
+//definiranje slike za ozadje
+var background = new Image();
+background.src = "sl8.png";
+
+// Make sure the image is loaded first otherwise nothing will draw.
+background.onload = function(){
+   ctx.drawImage(background,0,0);  
+}
+
+function odpriOkno(){
+var Win2 = open("", "", "height=512,width=512,status=yes");
+Win2.moveTo(522,120);
+Win2.location.href="https://www.ff.uni-lj.si/";
+}
+
+// Draw whatever else over top of it on the canvas.
+/*Make sure that in case your image is not in the dom,
+and you get it from local directory or server, you should wait for the image to load and just after that to draw it on the canvas.
+
+something like that:
+
+function drawBgImg() {
+    let bgImg = new Image();
+    bgImg.src = '/images/1.jpg';
+    bgImg.onload = () => {
+        gCtx.drawImage(bgImg, 0, 0, gElCanvas.width, gElCanvas.height);
+    }
+}
+*/
+</script>
+</body>
+</html>

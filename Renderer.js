@@ -98,12 +98,16 @@ export class Renderer extends BaseRenderer {
         super(canvas);
         this.perFragment = true;
     }
+    
 
     async initialize() {
         await super.initialize();
 
         const codePerFragment = await fetch('lambertPerFragment.wgsl').then(response => response.text());
         const codePerVertex = await fetch('lambertPerVertex.wgsl').then(response => response.text());
+
+        //Koda za shadowmapping shader
+        const codeForShadow = await fetch('shadow-depth.wgsl').then(response=> response.text());
 
         const modulePerFragment = this.device.createShaderModule({ code: codePerFragment });
         const modulePerVertex = this.device.createShaderModule({ code: codePerVertex });
@@ -171,6 +175,8 @@ export class Renderer extends BaseRenderer {
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         });
     }
+
+
 
     prepareNode(node) {
         if (this.gpuObjects.has(node)) {
@@ -264,6 +270,71 @@ export class Renderer extends BaseRenderer {
         this.gpuObjects.set(material, gpuObjects);
         return gpuObjects;
     }
+
+    // renderShadows(scene, light) {
+ 
+    // // Step 1: Create a depth texture and a framebuffer for rendering the depth map
+    // const depthTexture = this.device.createTexture({
+    //     size: { width: 2048, height: 2048, depth: 1 },
+    //     format: 'depth24plus',
+    //     usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.SAMPLED
+    // });
+
+    // const depthTextureView = depthTexture.createView();
+
+    // // Step 2: Create a depth render pass descriptor
+    // const depthRenderPassDescriptor = {
+    //     colorAttachments: [],
+    //     depthStencilAttachment: {
+    //         view: depthTextureView,
+    //         depthLoadValue: 1.0,
+    //         depthStoreOp: 'store',
+    //         stencilLoadValue: 'load',
+    //         stencilStoreOp: 'store',
+    //     },
+    // };
+
+    // // Step 3: Create a depth render pipeline
+    // const depthRenderPipeline = this.device.createRenderPipeline({
+    //     layout: this.device.createPipelineLayout({ bindGroupLayouts: [this.cameraBindGroupLayout] }),
+    //     vertex: {
+    //         module: this.device.createShaderModule({ code: codeForShadow }),
+    //         entryPoint: 'main',
+    //     },
+    //     fragment: {
+    //         module: this.device.createShaderModule({ code: codeForShadow }),
+    //         entryPoint: 'main',
+    //         targets: [],
+    //     },
+    //     depthStencil: {
+    //         format: 'depth24plus',
+    //         depthWriteEnabled: true,
+    //         depthCompare: 'less',
+    //     },
+    //     primitive: {
+    //         topology: 'triangle-list',
+    //     },
+    // });
+
+    // // Step 4: Create a bind group for the depth rendering
+    // const depthBindGroup = this.device.createBindGroup({
+    //     layout: depthRenderPipeline.getBindGroupLayout(0),
+    //     entries: [
+    //         { binding: 0, resource: this.cameraUniformBuffer },
+    //     ],
+    // });
+
+    // // Step 5: Render the depth map and use it in your main rendering pass
+    // const commandEncoder = this.device.createCommandEncoder();
+    // const depthPass = commandEncoder.beginRenderPass(depthRenderPassDescriptor);
+    // depthPass.setPipeline(depthRenderPipeline);
+    // depthPass.setBindGroup(0, depthBindGroup);
+    // depthPass.draw(3, 1, 0, 0);
+    // depthPass.endPass();
+
+    // this.device.queue.submit([commandEncoder.finish()]);
+        
+    // }
 
     render(scene, camera, light) {
         if (this.depthTexture.width !== this.canvas.width || this.depthTexture.height !== this.canvas.height) {

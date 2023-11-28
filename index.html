@@ -7,12 +7,33 @@
     <script src="./lib/dat.gui.min.js"></script>
     <script type="module" src="main2.js"></script>
     <link rel="stylesheet" href="./common/style.css">
+
+    <style>
+        #btn1 {position:absolute;left:80px; top:28px; width:55px; height:55px}
+        #btn2 {position:absolute;left:190px; top:28px;  width:55px; height:55px}
+        #btn3 {position:absolute;left:300px; top:28px;  width:55px; height:55px}
+        div#igra {
+            position:relative;
+            width:512;
+            height: 512;
+        }
+    </style>
 </head>
 <body>
+    <div id = "igra">
+    <input id='btn1' type="image" onClick="funkcija1()" src="zajec.png">
+    <input id='btn2' type="image" onClick="odpriOkno()" src="luna.png">
+    <input id='btn3' type="image" onClick="funkcija3()" src="winter.png" >
     <div class="fullscreen no-touch pixelated">
         <canvas></canvas>
     </div>
    <!-- <audio src="./sinnesloschen-beam-117362.mp3" id="pesem" loop="loop"></audio> -->
+    </div>
+<script>
+funkcija1 = function(){
+    window.location.href = "home.html";
+}
 
+</script>
 </body>
 </html>
