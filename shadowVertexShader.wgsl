@@ -37,14 +37,14 @@ struct VertexOutput {
     @location(2) normal : vec3f,
 }
 
-struct FragmentInput {
-    @location(1) texcoords : vec2f,
-    @location(2) normal : vec3f,
-}
+// struct FragmentInput {
+//     @location(1) texcoords : vec2f,
+//     @location(2) normal : vec3f,
+// }
 
-struct FragmentOutput {
-    @location(0) color : vec4f,
-}
+// struct FragmentOutput {
+//     @location(0) color : vec4f,
+// }
 
 struct CameraUniforms {
     viewMatrix : mat4x4f,
@@ -77,8 +77,16 @@ struct MaterialUniforms {
 @group(3) @binding(2) var baseSampler : sampler;
 
 @vertex
-fn main(input : VertexInput) ->  @builtin(position) vec4<f32> {
+fn main(input : VertexInput) -> @builtin(position) vec4<f32> {
+
   
   return camera.projectionMatrix * camera.viewMatrix * model.modelMatrix * vec4(input.position, 1);
  
 }
+
+// @fragment
+// fn fragment(input: FragmentInput) -> FragmentOutput {
+//     var output : FragmentOutput;
+//     output.color = input;
+//     return output;
+// }

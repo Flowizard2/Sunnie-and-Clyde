@@ -59,6 +59,28 @@ const lightBindGroupLayout = {
             visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
             buffer: {},
         },
+        // Bindingi za sence
+        {
+            binding: 1,
+            visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+            buffer: {
+              type: 'uniform',
+            },
+          },
+          {
+            binding: 2,
+            visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+            texture: {
+              sampleType: 'depth',
+            },
+          },
+          {
+            binding: 3,
+            visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+            sampler: {
+              type: 'comparison',
+            },
+          },
     ],
 };
 
@@ -100,6 +122,7 @@ export class Renderer extends BaseRenderer {
         this.shadowDepthTexture = null;
         this.shadowFramebuffer = null;
         this.shadowRenderPipeline = null;
+        this.shadowDepthTextureView = null;
     }
     
 
@@ -116,17 +139,17 @@ export class Renderer extends BaseRenderer {
         this.lightBindGroupLayout = this.device.createBindGroupLayout(lightBindGroupLayout);
         this.modelBindGroupLayout = this.device.createBindGroupLayout(modelBindGroupLayout);
         this.materialBindGroupLayout = this.device.createBindGroupLayout(materialBindGroupLayout);
-
+        //this.shadowBindGroupLayout = this.device.createBindGroupLayout(shadowBindGroupLayout);
 
     
 
         // Initialize Shadow Mapping Resources
         this.shadowDepthTexture = this.device.createTexture({
-            size: { width: 2048, height: 2048, depthOrArrayLayers: 1 },
+            size: { width: 1104, height: 1212, depthOrArrayLayers: 1 },
             format: 'depth24plus-stencil8',
             usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
         });
-        
+        this.shadowDepthTextureView = this.shadowDepthTexture.createView();
 
         this.shadowFramebuffer = this.device.createRenderBundleEncoder({
             colorFormats: [],
@@ -165,6 +188,11 @@ export class Renderer extends BaseRenderer {
                 entryPoint: 'main',
                 buffers: [vertexBufferLayout],
             },
+            fragment: {
+                module: modulePerFragment,
+                entryPoint: 'fragment',
+                targets: [{ format: this.format }],
+            },
         // No fragment shader as we're only interested in depth
             //: this.device.createPipelineLayout({ bindGroupLayouts: [this.cameraBindGroupLayout] }),
             depthStencil: {
@@ -201,11 +229,11 @@ export class Renderer extends BaseRenderer {
                 targets: [{ format: this.format }],
             },
             depthStencil: {
-                format: 'depth24plus',
+                format: 'depth24plus-stencil8',
                 depthWriteEnabled: true,
                 depthCompare: 'less',
             },
-            layout,
+            layout,    
         });
 
         this.pipelinePerVertex = await this.device.createRenderPipelineAsync({
@@ -295,14 +323,22 @@ export class Renderer extends BaseRenderer {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
+        const sceneUniformBuffer = device.createBuffer({
+            size: 4 * 16,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
         const lightBindGroup = this.device.createBindGroup({
             layout: this.lightBindGroupLayout,
             entries: [
                 { binding: 0, resource: { buffer: lightUniformBuffer } },
+                { binding: 1, resource: { buffer: this.sceneUniformBuffer } },
+                { binding: 2, resource: this.shadowDepthTextureView },
+                { binding: 3, resource: this.shadowSampler },
             ],
         });
 
-        const gpuObjects = { lightUniformBuffer, lightBindGroup };
+        const gpuObjects = { sceneUniformBuffer, lightUniformBuffer, lightBindGroup };
         this.gpuObjects.set(light, gpuObjects);
         return gpuObjects;
     }
@@ -334,22 +370,44 @@ export class Renderer extends BaseRenderer {
         return gpuObjects;
     }
 
+    // prepareShadow() {
+    //     const sceneUniformBuffer = device.createBuffer({
+    //         size: 4 * 16,
+    //         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    //     });
+
+    //     const shadowBindGroup = this.device.createBindGroup({
+    //         layout: this.shadowBindGroupLayout,
+    //         entries: [
+    //             { binding: 0, resource: { buffer: this.sceneUniformBuffer } },
+    //             { binding: 1, resource: this.shadowDepthTextureView },
+    //             { binding: 2, resource: this.shadowSampler },
+    //         ],
+    //     });
+
+    //     const vrniOba = { sceneUniformBuffer, shadowBindGroup };
+
+    //     return vrniOba;
+    // }
+
     renderShadowMap(scene, camera, light) {
         const encoder = this.device.createCommandEncoder();
         const passDescriptor = {
-            colorAttachments: [
-                {
-                    view: this.context.getCurrentTexture().createView(),
-                    clearValue: [1, 1, 1, 1],
-                    loadOp: 'clear',
-                    storeOp: 'store',
-                }
-            ],
+            // colorAttachments: [
+            //     {
+            //         view: this.context.getCurrentTexture().createView(),
+            //         clearValue: [1, 1, 1, 1],
+            //         loadOp: 'clear',
+            //         storeOp: 'store',
+            //     }
+            // ],
             depthStencilAttachment: {
                 view: this.shadowDepthTexture.createView(),
                 depthLoadOp: 'clear',
                 depthClearValue: 1.0,
                 depthStoreOp: 'store',
+                stencilLoadOp: 'load',   // Add this line
+                stencilStoreOp: 'store', // Add this line
             },
         };
         this.renderPass = encoder.beginRenderPass(passDescriptor);
@@ -362,6 +420,7 @@ export class Renderer extends BaseRenderer {
         const cameraComponent = camera.getComponentOfType(Camera);
         const viewMatrix = getGlobalViewMatrix(camera);
         const projectionMatrix = getProjectionMatrix(camera);
+        this.lightProjectionMatrix = projectionMatrix;      // Shranimo matriko za kasnejso uporabo.
         const { cameraUniformBuffer, cameraBindGroup } = this.prepareCamera(cameraComponent);
         this.device.queue.writeBuffer(cameraUniformBuffer, 0, viewMatrix);
         this.device.queue.writeBuffer(cameraUniformBuffer, 64, projectionMatrix);
@@ -424,12 +483,17 @@ export class Renderer extends BaseRenderer {
         const lightDirection = vec3.normalize(vec3.create(), lightComponent.direction);
         //const lightIntensity = new Float32Array([lightComponent.intensity]);
 
-        const { lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent);
+        const { sceneUniformBuffer, lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent);
         this.device.queue.writeBuffer(lightUniformBuffer, 0, lightColor);
         this.device.queue.writeBuffer(lightUniformBuffer, 16, lightDirection);
+        this.device.queue.writeBuffer(sceneUniformBuffer, 0, this.lightProjectionMatrix);   // To je za sence
+        this.renderPass.setBindGroup(1, lightBindGroup);
         //this.device.queue.writeBuffer(lightUniformBuffer, 32, lightIntensity);
 
-        this.renderPass.setBindGroup(1, lightBindGroup);
+        // Ustvarimo bind group za sence
+        //const { sceneUniformBuffer, shadowBindGroup } = this.prepareShadow();
+        
+        //this.renderPass.setBindGroup(4, shadowBindGroup);
 
         // BIND THE SHADOW MAP AND ITS SAMPLER TO THE GPU
 

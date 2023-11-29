@@ -146,7 +146,7 @@ camera.aabb = {
 const camera2 = new Node();
 camera2.addComponent(new Transform({
     translation: [0, 15, 0],
-    rotation: [0, 0, 0, 1],
+    rotation: [0, -(90*3.14/180), 0, 1],
     scale: [1, 1, 1],
 }));
 
@@ -441,7 +441,7 @@ function update(time, dt) {
 function render() {
    //CALL RENDER SHADOW MAP BEFORE RENDER (Z novo kamero)  renderer.renderShadowMap(scene, camera2, light);
    renderer.renderShadowMap(scene, camera2, light);
-   // renderer.render(scene, camera, light);
+   renderer.render(scene, camera, light);
 }
 
 function resize({ displaySize: { width, height }}) {
