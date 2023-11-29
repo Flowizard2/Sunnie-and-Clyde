@@ -143,12 +143,29 @@ camera.aabb = {
     max: [0.2, 0.2, 0.2],
 };
 
+const camera2 = new Node();
+camera2.addComponent(new Transform({
+    translation: [0, 15, 0],
+    rotation: [0, 0, 0, 1],
+    scale: [1, 1, 1],
+}));
+
+camera2.addComponent(new Camera({
+    orthographic: 1,    
+    aspect:1.7777777777777777,
+	fovy:0.39959652046304894,
+    far:100,
+	near:0.10000000149011612
+}));
+
 const light = new Node();
 light.addComponent(new Light({
     direction: [0.78, 2.58, 2.8],
     //intensity: 10.0,
 }));
 scene.addChild(light);
+
+// CREATE A CAMERA THAT REPRESENTS THE LIGHTs POINT OF VIEW
 
 // Loopamo cez vse node-e in jih nastavimo, da so STATIC
 
@@ -395,7 +412,7 @@ function update(time, dt) {
         Object.keys(tileTimers).forEach(tile => {
             //console.log("tile: ", tile);
             const tilePosition = getNodePosition(tile);
-            console.log("NodeName: ", getNodeByName(tile))
+            //console.log("NodeName: ", getNodeByName(tile))
             
             if (isClydeAboveTile(clydePosition, tilePosition)) {
                 tileTimers[tile] += dt;
@@ -422,7 +439,9 @@ function update(time, dt) {
 }
 
 function render() {
-    renderer.render(scene, camera, light);
+   //CALL RENDER SHADOW MAP BEFORE RENDER (Z novo kamero)  renderer.renderShadowMap(scene, camera2, light);
+   renderer.renderShadowMap(scene, camera2, light);
+   // renderer.render(scene, camera, light);
 }
 
 function resize({ displaySize: { width, height }}) {

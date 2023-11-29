@@ -126,7 +126,7 @@ export class Renderer extends BaseRenderer {
             format: 'depth24plus-stencil8',
             usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
         });
-        const shadowDepthTextureView = this.shadowDepthTexture.createView();
+        
 
         this.shadowFramebuffer = this.device.createRenderBundleEncoder({
             colorFormats: [],
@@ -135,10 +135,29 @@ export class Renderer extends BaseRenderer {
             stencilReadOnly: false
         }).finish();
 
+        // SHADOW MAP SAMPLER
+        this.shadowSampler = this.device.createSampler({
+            magFilter: 'linear',
+            minFilter: 'linear',
+            mipmapFilter: 'linear',
+            addressModeU: 'clamp-to-edge',
+            addressModeV: 'clamp-to-edge',
+            compare: 'less',
+        });
 
         // Creating Shadow Mapping Pipeline
         const shadowVertexShaderCode = await fetch('shadowVertexShader.wgsl').then(response => response.text());
         const shadowVertexShaderModule = this.device.createShaderModule({ code: shadowVertexShaderCode });
+
+
+        const layout = this.device.createPipelineLayout({
+            bindGroupLayouts: [
+                this.cameraBindGroupLayout,
+                this.lightBindGroupLayout,
+                this.modelBindGroupLayout,
+                this.materialBindGroupLayout,
+            ],
+        });
 
         this.shadowPipeline = this.device.createRenderPipeline({
             vertex: {
@@ -147,7 +166,7 @@ export class Renderer extends BaseRenderer {
                 buffers: [vertexBufferLayout],
             },
         // No fragment shader as we're only interested in depth
-            layout: this.device.createPipelineLayout({ bindGroupLayouts: [this.cameraBindGroupLayout] }),
+            layout,//: this.device.createPipelineLayout({ bindGroupLayouts: [this.cameraBindGroupLayout] }),
             depthStencil: {
                 format: 'depth24plus-stencil8', // Match the shadow map texture format
                 depthWriteEnabled: true,
@@ -158,16 +177,16 @@ export class Renderer extends BaseRenderer {
             },
         });
 
-        
 
-        const layout = this.device.createPipelineLayout({
-            bindGroupLayouts: [
-                this.cameraBindGroupLayout,
-                this.lightBindGroupLayout,
-                this.modelBindGroupLayout,
-                this.materialBindGroupLayout,
-            ],
-        });
+
+        // const layout = this.device.createPipelineLayout({
+        //     bindGroupLayouts: [
+        //         this.cameraBindGroupLayout,
+        //         this.lightBindGroupLayout,
+        //         this.modelBindGroupLayout,
+        //         this.materialBindGroupLayout,
+        //     ],
+        // });
 
         this.pipelinePerFragment = await this.device.createRenderPipelineAsync({
             vertex: {
@@ -314,12 +333,19 @@ export class Renderer extends BaseRenderer {
         return gpuObjects;
     }
 
-    renderShadowMap(scene, lightCamera) {
+    renderShadowMap(scene, camera, light) {
         const encoder = this.device.createCommandEncoder();
         const passDescriptor = {
-            colorAttachments: [],
+            colorAttachments: [
+                {
+                    view: this.context.getCurrentTexture().createView(),
+                    clearValue: [1, 1, 1, 1],
+                    loadOp: 'clear',
+                    storeOp: 'store',
+                }
+            ],
             depthStencilAttachment: {
-                view: this.shadowMapTexture.createView(),
+                view: this.shadowDepthTexture.createView(),
                 depthLoadOp: 'clear',
                 depthClearValue: 1.0,
                 depthStoreOp: 'store',
@@ -329,7 +355,32 @@ export class Renderer extends BaseRenderer {
         pass.setPipeline(this.shadowPipeline);
     
         // Set up light camera bind group and render the scene
-        // ...
+        // LOOP THROUGH ALL OBJECTS AND RENDER THEM
+
+        //Poskusna koda
+        const cameraComponent = camera.getComponentOfType(Camera);
+        const viewMatrix = getGlobalViewMatrix(camera);
+        const projectionMatrix = getProjectionMatrix(camera);
+        const { cameraUniformBuffer, cameraBindGroup } = this.prepareCamera(cameraComponent);
+        this.device.queue.writeBuffer(cameraUniformBuffer, 0, viewMatrix);
+        this.device.queue.writeBuffer(cameraUniformBuffer, 64, projectionMatrix);
+        this.pass.setBindGroup(0, cameraBindGroup);
+
+        const lightComponent = light.getComponentOfType(Light);
+        const lightColor = vec3.scale(vec3.create(), lightComponent.color, 1 / 255);
+        const lightDirection = vec3.normalize(vec3.create(), lightComponent.direction);
+        //const lightIntensity = new Float32Array([lightComponent.intensity]);
+
+        const { lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent);
+        this.device.queue.writeBuffer(lightUniformBuffer, 0, lightColor);
+        this.device.queue.writeBuffer(lightUniformBuffer, 16, lightDirection);
+        //this.device.queue.writeBuffer(lightUniformBuffer, 32, lightIntensity);
+
+        this.pass.setBindGroup(1, lightBindGroup);
+
+        this.renderNode(scene);
+        //Konec poskusne kode
+
     
         this.device.queue.submit([encoder.finish()]);
     }
@@ -378,6 +429,8 @@ export class Renderer extends BaseRenderer {
         //this.device.queue.writeBuffer(lightUniformBuffer, 32, lightIntensity);
 
         this.renderPass.setBindGroup(1, lightBindGroup);
+
+        // BIND THE SHADOW MAP AND ITS SAMPLER TO THE GPU
 
         this.renderNode(scene);
 
