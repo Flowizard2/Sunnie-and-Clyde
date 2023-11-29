@@ -159,14 +159,14 @@ export class Renderer extends BaseRenderer {
             ],
         });
 
-        this.shadowPipeline = this.device.createRenderPipeline({
+        this.shadowPipeline = await this.device.createRenderPipelineAsync({
             vertex: {
                 module: shadowVertexShaderModule,
                 entryPoint: 'main',
                 buffers: [vertexBufferLayout],
             },
         // No fragment shader as we're only interested in depth
-            layout,//: this.device.createPipelineLayout({ bindGroupLayouts: [this.cameraBindGroupLayout] }),
+            //: this.device.createPipelineLayout({ bindGroupLayouts: [this.cameraBindGroupLayout] }),
             depthStencil: {
                 format: 'depth24plus-stencil8', // Match the shadow map texture format
                 depthWriteEnabled: true,
@@ -175,6 +175,7 @@ export class Renderer extends BaseRenderer {
             primitive: {
             topology: 'triangle-list',
             },
+            layout,
         });
 
 
@@ -351,8 +352,8 @@ export class Renderer extends BaseRenderer {
                 depthStoreOp: 'store',
             },
         };
-        const pass = encoder.beginRenderPass(passDescriptor);
-        pass.setPipeline(this.shadowPipeline);
+        this.renderPass = encoder.beginRenderPass(passDescriptor);
+        this.renderPass.setPipeline(this.shadowPipeline);
     
         // Set up light camera bind group and render the scene
         // LOOP THROUGH ALL OBJECTS AND RENDER THEM
@@ -364,7 +365,7 @@ export class Renderer extends BaseRenderer {
         const { cameraUniformBuffer, cameraBindGroup } = this.prepareCamera(cameraComponent);
         this.device.queue.writeBuffer(cameraUniformBuffer, 0, viewMatrix);
         this.device.queue.writeBuffer(cameraUniformBuffer, 64, projectionMatrix);
-        this.pass.setBindGroup(0, cameraBindGroup);
+        this.renderPass.setBindGroup(0, cameraBindGroup);
 
         const lightComponent = light.getComponentOfType(Light);
         const lightColor = vec3.scale(vec3.create(), lightComponent.color, 1 / 255);
@@ -376,7 +377,7 @@ export class Renderer extends BaseRenderer {
         this.device.queue.writeBuffer(lightUniformBuffer, 16, lightDirection);
         //this.device.queue.writeBuffer(lightUniformBuffer, 32, lightIntensity);
 
-        this.pass.setBindGroup(1, lightBindGroup);
+        this.renderPass.setBindGroup(1, lightBindGroup);
 
         this.renderNode(scene);
         //Konec poskusne kode
