@@ -441,7 +441,7 @@ function update(time, dt) {
 function render() {
    //CALL RENDER SHADOW MAP BEFORE RENDER (Z novo kamero)  renderer.renderShadowMap(scene, camera2, light);
    renderer.renderShadowMap(scene, camera2, light);
-   renderer.render(scene, camera, light);
+   //renderer.render(scene, camera, light);
 }
 
 function resize({ displaySize: { width, height }}) {

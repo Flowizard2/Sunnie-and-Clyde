@@ -80,7 +80,7 @@ struct MaterialUniforms {
 fn main(input : VertexInput) -> @builtin(position) vec4<f32> {
 
   
-  return camera.projectionMatrix * camera.viewMatrix * model.modelMatrix * vec4(input.position, 1);
+  return camera.projectionMatrix * camera.viewMatrix * model.modelMatrix * vec4(input.position, 1.0);
  
 }
 
