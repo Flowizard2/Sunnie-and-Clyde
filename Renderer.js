@@ -97,6 +97,9 @@ export class Renderer extends BaseRenderer {
     constructor(canvas) {
         super(canvas);
         this.perFragment = true;
+        this.shadowDepthTexture = null;
+        this.shadowFramebuffer = null;
+        this.shadowRenderPipeline = null;
     }
     
 
@@ -106,9 +109,6 @@ export class Renderer extends BaseRenderer {
         const codePerFragment = await fetch('lambertPerFragment.wgsl').then(response => response.text());
         const codePerVertex = await fetch('lambertPerVertex.wgsl').then(response => response.text());
 
-        //Koda za shadowmapping shader
-        const codeForShadow = await fetch('shadow-depth.wgsl').then(response=> response.text());
-
         const modulePerFragment = this.device.createShaderModule({ code: codePerFragment });
         const modulePerVertex = this.device.createShaderModule({ code: codePerVertex });
 
@@ -116,6 +116,47 @@ export class Renderer extends BaseRenderer {
         this.lightBindGroupLayout = this.device.createBindGroupLayout(lightBindGroupLayout);
         this.modelBindGroupLayout = this.device.createBindGroupLayout(modelBindGroupLayout);
         this.materialBindGroupLayout = this.device.createBindGroupLayout(materialBindGroupLayout);
+
+
+        //Inicializacija Shadow mapping resursov
+
+        // Initialize Shadow Mapping Resources
+        this.shadowDepthTexture = this.device.createTexture({
+            size: { width: 2048, height: 2048, depthOrArrayLayers: 1 },
+            format: 'depth24plus-stencil8',
+            usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
+        });
+        const shadowDepthTextureView = this.shadowDepthTexture.createView();
+
+        this.shadowFramebuffer = this.device.createRenderBundleEncoder({
+            colorFormats: [],
+            depthStencilFormat: 'depth24plus-stencil8',
+            depthReadOnly: false,
+            stencilReadOnly: false
+        }).finish();
+
+
+        // Creating Shadow Mapping Pipeline
+        const shadowVertexShaderCode = await fetch('shadowVertexShader.wgsl').then(response => response.text());
+        const shadowVertexShaderModule = this.device.createShaderModule({ code: shadowVertexShaderCode });
+
+        this.shadowPipeline = this.device.createRenderPipeline({
+            vertex: {
+                module: shadowVertexShaderModule,
+                entryPoint: 'main',
+                buffers: [vertexBufferLayout],
+            },
+        // No fragment shader as we're only interested in depth
+        layout: this.device.createPipelineLayout({ bindGroupLayouts: [this.cameraBindGroupLayout] }),
+            depthStencil: {
+                format: 'depth24plus-stencil8', // Match the shadow map texture format
+                depthWriteEnabled: true,
+                depthCompare: 'less',
+            },
+            primitive: {
+            topology: 'triangle-list',
+            },
+        });
 
         const layout = this.device.createPipelineLayout({
             bindGroupLayouts: [
@@ -270,6 +311,27 @@ export class Renderer extends BaseRenderer {
         this.gpuObjects.set(material, gpuObjects);
         return gpuObjects;
     }
+
+    renderShadowMap(scene, lightCamera) {
+        const encoder = this.device.createCommandEncoder();
+        const passDescriptor = {
+            colorAttachments: [],
+            depthStencilAttachment: {
+                view: this.shadowMapTexture.createView(),
+                depthLoadOp: 'clear',
+                depthClearValue: 1.0,
+                depthStoreOp: 'store',
+            },
+        };
+        const pass = encoder.beginRenderPass(passDescriptor);
+        pass.setPipeline(this.shadowPipeline);
+    
+        // Set up light camera bind group and render the scene
+        // ...
+    
+        this.device.queue.submit([encoder.finish()]);
+    }
+    
 
     // renderShadows(scene, light) {
  
