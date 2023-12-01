@@ -1,3 +1,5 @@
+override shadowDepthTextureSize: f32 = 2048.0;
+
 struct VertexInput {
     @location(0) position : vec3f,
     @location(1) texcoords : vec2f,
@@ -5,12 +7,14 @@ struct VertexInput {
 }
 
 struct VertexOutput {
+    @location(0) shadowPosition : vec3f,
     @builtin(position) position : vec4f,
     @location(1) texcoords : vec2f,
     @location(2) normal : vec3f,
 }
 
 struct FragmentInput {
+    @location(0) shadowPosition : vec3f,
     @location(1) texcoords : vec2f,
     @location(2) normal : vec3f,
 }
@@ -57,20 +61,46 @@ struct Scene {
 @group(3) @binding(1) var baseTexture : texture_2d<f32>;
 @group(3) @binding(2) var baseSampler : sampler;
 
+// const albedo = vec3<f32>(0.9);
+const ambientFactor = 0.3;
 
 
 @vertex
 fn vertex(input : VertexInput) -> VertexOutput {
     var output : VertexOutput;
-    output.position = camera.projectionMatrix * camera.viewMatrix * model.modelMatrix * vec4(input.position, 1);
+    let positionFromLight = scene.lightViewProjMatrix * model.modelMatrix * vec4(input.position, 1);
+    
+    output.shadowPosition = vec3(
+        positionFromLight.xy * vec2(0.5, -0.5) + vec2(0.5),
+        positionFromLight.z
+    );
+
     output.texcoords = input.texcoords;
     output.normal = model.normalMatrix * input.normal;
+    output.position = camera.projectionMatrix * camera.viewMatrix * model.modelMatrix * vec4(input.position, 1);
     return output;
 }
 
 @fragment
-fn fragment(input : FragmentInput) -> FragmentOutput {
-    var output : FragmentOutput;
+fn fragment(input : FragmentInput) -> @location(0) vec4<f32> {
+    var visibility = 0.0;
+    let oneOverShadowDepthTextureSize = 1.0 / shadowDepthTextureSize;
+    for (var y = -1; y <= 1; y++) {
+        for (var x = -1; x <= 1; x++) {
+            let offset = vec2<f32>(vec2(x, y)) * oneOverShadowDepthTextureSize;
+
+            visibility += textureSampleCompare(
+                shadowMap, shadowSampler,
+                input.shadowPosition.xy + offset, input.shadowPosition.z - 0.007
+            );
+        }
+    }
+    visibility /= 9.0;
+
+
+
+
+    //var output : FragmentOutput;
 
     let N = normalize(input.normal);
     let L = light.direction;
@@ -91,23 +121,25 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     //let finalColor = colorWithShadow * diffuseLight;
 
     // Check if the surface is in shadow based on the lambert term
-    if (lambert > 0.4) {
-        // Surface is directly lit. Use the standard lighting model.
-        let diffuseLight = lambert * light.color;
-        let finalColor = albedo * diffuseLight;
-        output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
-    } else if(lambert > 0.0) {
-        let colorWithShadow = mix(albedo, shadowColor, shadowFactor);
-        let finalColor = colorWithShadow * diffuseLight;
-        output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
-    } else {
-        let finalColor = shadowColor;
-        output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
-    }
+    // if (lambert > 0.4) {
+    //     // Surface is directly lit. Use the standard lighting model.
+    //     let diffuseLight = lambert * light.color;
+    //     let finalColor = albedo * diffuseLight;
+    //     output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
+    // } else if(lambert > 0.0) {
+    //     let colorWithShadow = mix(albedo, shadowColor, shadowFactor);
+    //     let finalColor = colorWithShadow * diffuseLight;
+    //     output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
+    // } else {
+    //     let finalColor = shadowColor;
+    //     output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
+    // }
 
+    
+   
+    let lightingFactor = min(ambientFactor + visibility * lambert, 1.0);
+    
     //output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
-
-    let neki = scene.lightViewProjMatrix;
-
-    return output;
+    return vec4(lightingFactor * albedo, 1.0);
+    //return output;
 }

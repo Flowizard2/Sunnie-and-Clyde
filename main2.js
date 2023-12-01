@@ -42,7 +42,7 @@ const renderer = new Renderer(canvas); //TT
 await renderer.initialize();
 
 const loader = new GLTFLoader();
-await loader.load('scena2.gltf');
+await loader.load('scena3.gltf');
 
 const rjavaMaterial = loader.loadMaterial(0);
 // const zelenaMaterial = loader.loadMaterial(???);
@@ -143,20 +143,27 @@ camera.aabb = {
     max: [0.2, 0.2, 0.2],
 };
 
-const camera2 = new Node();
-camera2.addComponent(new Transform({
-    translation: [0, 15, 0],
-    rotation: [0, -(90*3.14/180), 0, 1],
-    scale: [1, 1, 1],
-}));
+// const camera2 = new Node();
+// camera2.addComponent(new Transform({
+//     translation: [0, 15, 0],
+//     rotation: [0, 90, 0, 1],
+//     scale: [1, 1, 1],
+// }));
 
-camera2.addComponent(new Camera({
-    orthographic: 1,    
-    aspect:1.7777777777777777,
-	fovy:0.39959652046304894,
-    far:100,
-	near:0.10000000149011612
-}));
+// camera2.addComponent(new Camera({
+//     orthographic: 1,    
+//     aspect:1.7777777777777777,
+// 	fovy:0.39959652046304894,
+//     far:100,
+// 	near:0.10000000149011612
+// }));
+const camera2 = loader.loadNode('Camera2');
+//camera2.isDynamic = true;
+camera2.aabb = {
+    min: [-0.2, -0.2, -0.2],
+    max: [0.2, 0.2, 0.2],
+};
+//camera2.getComponentOfType(Transform).translation = [0, 0, 0];
 
 const light = new Node();
 light.addComponent(new Light({
@@ -439,9 +446,13 @@ function update(time, dt) {
 }
 
 function render() {
+  
    //CALL RENDER SHADOW MAP BEFORE RENDER (Z novo kamero)  renderer.renderShadowMap(scene, camera2, light);
-   renderer.renderShadowMap(scene, camera2, light);
-   //renderer.render(scene, camera, light);
+   //camera2.getComponentOfType(Camera).orthographic = 1;
+   renderer.renderShadowMap(scene, camera, light);
+  
+   
+   renderer.render(scene, camera, light);
 }
 
 function resize({ displaySize: { width, height }}) {

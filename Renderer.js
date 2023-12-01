@@ -83,6 +83,16 @@ const lightBindGroupLayout = {
           },
     ],
 };
+const lightBindGroupLayoutShadow = {
+    entries: [
+        {
+            binding: 0,
+            visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+            buffer: {},
+        },
+    ],
+};
+
 
 const modelBindGroupLayout = {
     entries: [
@@ -119,10 +129,8 @@ export class Renderer extends BaseRenderer {
     constructor(canvas) {
         super(canvas);
         this.perFragment = true;
-        this.shadowDepthTexture = null;
         this.shadowFramebuffer = null;
         this.shadowRenderPipeline = null;
-        this.shadowDepthTextureView = null;
     }
     
 
@@ -137,23 +145,23 @@ export class Renderer extends BaseRenderer {
 
         this.cameraBindGroupLayout = this.device.createBindGroupLayout(cameraBindGroupLayout);
         this.lightBindGroupLayout = this.device.createBindGroupLayout(lightBindGroupLayout);
+        this.lightBindGroupLayoutShadow = this.device.createBindGroupLayout(lightBindGroupLayoutShadow);
         this.modelBindGroupLayout = this.device.createBindGroupLayout(modelBindGroupLayout);
         this.materialBindGroupLayout = this.device.createBindGroupLayout(materialBindGroupLayout);
-        //this.shadowBindGroupLayout = this.device.createBindGroupLayout(shadowBindGroupLayout);
-
+        
     
 
         // Initialize Shadow Mapping Resources
         this.shadowDepthTexture = this.device.createTexture({
             size: { width: 2048, height: 2048, depthOrArrayLayers: 1 },
-            format: 'depth24plus-stencil8',
+            format: 'depth32float',
             usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
         });
         this.shadowDepthTextureView = this.shadowDepthTexture.createView();
 
         this.shadowFramebuffer = this.device.createRenderBundleEncoder({
             colorFormats: [],
-            depthStencilFormat: 'depth24plus-stencil8',
+            depthStencilFormat: 'depth32float',
             depthReadOnly: false,
             stencilReadOnly: false
         }).finish();
@@ -173,14 +181,7 @@ export class Renderer extends BaseRenderer {
         const shadowVertexShaderModule = this.device.createShaderModule({ code: shadowVertexShaderCode });
 
 
-        const layout = this.device.createPipelineLayout({
-            bindGroupLayouts: [
-                this.cameraBindGroupLayout,
-                this.lightBindGroupLayout,
-                this.modelBindGroupLayout,
-                this.materialBindGroupLayout,
-            ],
-        });
+  
 
         this.shadowPipeline = await this.device.createRenderPipelineAsync({
             vertex: {
@@ -196,16 +197,31 @@ export class Renderer extends BaseRenderer {
         // No fragment shader as we're only interested in depth
             //: this.device.createPipelineLayout({ bindGroupLayouts: [this.cameraBindGroupLayout] }),
             depthStencil: {
-                format: 'depth24plus-stencil8', // Match the shadow map texture format
+                format: 'depth32float', // Match the shadow map texture format
                 depthWriteEnabled: true,
                 depthCompare: 'less',
             },
             primitive: {
-            topology: 'triangle-list',
+                topology: 'triangle-list'
             },
-            layout,
+            layout :  this.device.createPipelineLayout({
+                bindGroupLayouts: [
+                    this.cameraBindGroupLayout,
+                    this.lightBindGroupLayoutShadow,
+                    this.modelBindGroupLayout,
+                    this.materialBindGroupLayout,
+                ],
+            }),
         });
 
+        const layout = this.device.createPipelineLayout({
+            bindGroupLayouts: [
+                this.cameraBindGroupLayout,
+                this.lightBindGroupLayout,
+                this.modelBindGroupLayout,
+                this.materialBindGroupLayout,
+            ],
+        });
 
 
         // const layout = this.device.createPipelineLayout({
@@ -248,7 +264,7 @@ export class Renderer extends BaseRenderer {
                 targets: [{ format: this.format }],
             },
             depthStencil: {
-                format: 'depth24plus',
+                format: 'depth24plus-stencil8',
                 depthWriteEnabled: true,
                 depthCompare: 'less',
             },
@@ -261,7 +277,7 @@ export class Renderer extends BaseRenderer {
     recreateDepthTexture() {
         this.depthTexture?.destroy();
         this.depthTexture = this.device.createTexture({
-            format: 'depth24plus',
+            format: 'depth24plus-stencil8',
             size: [this.canvas.width, this.canvas.height],
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         });
@@ -313,37 +329,54 @@ export class Renderer extends BaseRenderer {
         return gpuObjects;
     }
 
-    prepareLight(light) {
-        if (this.gpuObjects.has(light)) {
-            return this.gpuObjects.get(light);
+    prepareLight(light, shadow = false) {
+        // if (this.gpuObjects.has(light)) {
+        //     return this.gpuObjects.get(light);
+        // }
+       
+        if (shadow == false) {
+            const lightUniformBuffer = this.device.createBuffer({
+                size: 32,//36,
+                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            });
+
+            const sceneUniformBuffer = this.device.createBuffer({
+                size: 4 * 16,
+                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            });
+
+            const lightBindGroup = this.device.createBindGroup({
+                layout: this.lightBindGroupLayout,
+                entries: [
+                    { binding: 0, resource: { buffer: lightUniformBuffer } },
+                    { binding: 1, resource: { buffer: sceneUniformBuffer } },
+                    { binding: 2, resource: this.shadowDepthTextureView },
+                    { binding: 3, resource: this.shadowSampler },
+                ],
+            });
+
+            const gpuObjects = { sceneUniformBuffer, lightUniformBuffer, lightBindGroup };
+            this.gpuObjects.set(light, gpuObjects);
+            return gpuObjects;
+        } else {    
+            const lightUniformBuffer2 = this.device.createBuffer({
+                size: 32,//36,
+                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            });
+
+            const lightBindGroup2 = this.device.createBindGroup({
+                layout: this.lightBindGroupLayoutShadow,
+                entries: [
+                    { binding: 0, resource: { buffer: lightUniformBuffer2 } }
+                ],
+            });
+            const gpuObjects = {lightUniformBuffer2, lightBindGroup2 };
+            this.gpuObjects.set(light, gpuObjects);
+            return gpuObjects;
+        
         }
-
-        const lightUniformBuffer = this.device.createBuffer({
-            size: 32,//36,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        const sceneUniformBuffer = this.device.createBuffer({
-            size: 4 * 16,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        const lightBindGroup = this.device.createBindGroup({
-            layout: this.lightBindGroupLayout,
-            entries: [
-                { binding: 0, resource: { buffer: lightUniformBuffer } },
-                { binding: 1, resource: { buffer: sceneUniformBuffer } },
-                { binding: 2, resource: this.shadowDepthTextureView },
-                { binding: 3, resource: this.shadowSampler },
-            ],
-        });
-
-        const gpuObjects = { sceneUniformBuffer, lightUniformBuffer, lightBindGroup };
-        this.gpuObjects.set(light, gpuObjects);
-        return gpuObjects;
     }
-
-    prepareMaterial(material) {
+    prepareMaterial(material){
         if (this.gpuObjects.has(material)) {
             return this.gpuObjects.get(material);
         }
@@ -403,11 +436,9 @@ export class Renderer extends BaseRenderer {
             ],
             depthStencilAttachment: {
                 view: this.shadowDepthTexture.createView(),
-                depthLoadOp: 'clear',
                 depthClearValue: 1.0,
-                depthStoreOp: 'store',
-                stencilLoadOp: 'load',
-                stencilStoreOp: 'store',
+                depthLoadOp: 'clear',
+                depthStoreOp: 'store', 
             },
         };
         this.renderPass = encoder.beginRenderPass(passDescriptor);
@@ -431,17 +462,18 @@ export class Renderer extends BaseRenderer {
         const lightDirection = vec3.normalize(vec3.create(), lightComponent.direction);
         //const lightIntensity = new Float32Array([lightComponent.intensity]);
 
-        const { lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent);
-        this.device.queue.writeBuffer(lightUniformBuffer, 0, lightColor);
-        this.device.queue.writeBuffer(lightUniformBuffer, 16, lightDirection);
+        const { lightUniformBuffer2, lightBindGroup2 } = this.prepareLight(lightComponent, true);
+        
+        this.device.queue.writeBuffer(lightUniformBuffer2, 0, lightColor);
+        this.device.queue.writeBuffer(lightUniformBuffer2, 16, lightDirection);
         //this.device.queue.writeBuffer(lightUniformBuffer, 32, lightIntensity);
 
-        this.renderPass.setBindGroup(1, lightBindGroup);
+        this.renderPass.setBindGroup(1, lightBindGroup2);
 
         this.renderNode(scene);
         //Konec poskusne kode
 
-    
+        this.renderPass.end();
         this.device.queue.submit([encoder.finish()]);
     }
     
@@ -466,6 +498,8 @@ export class Renderer extends BaseRenderer {
                 depthClearValue: 1,
                 depthLoadOp: 'clear',
                 depthStoreOp: 'discard',
+                stencilLoadOp: 'clear',
+                stencilStoreOp: 'discard',
             },
         });
         this.renderPass.setPipeline(this.perFragment ? this.pipelinePerFragment : this.pipelinePerVertex);
@@ -483,7 +517,7 @@ export class Renderer extends BaseRenderer {
         const lightDirection = vec3.normalize(vec3.create(), lightComponent.direction);
         //const lightIntensity = new Float32Array([lightComponent.intensity]);
 
-        const { sceneUniformBuffer, lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent);
+        const { sceneUniformBuffer, lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent, false);
         this.device.queue.writeBuffer(lightUniformBuffer, 0, lightColor);
         this.device.queue.writeBuffer(lightUniformBuffer, 16, lightDirection);
         this.device.queue.writeBuffer(sceneUniformBuffer, 0, this.lightProjectionMatrix);   // To je za sence
