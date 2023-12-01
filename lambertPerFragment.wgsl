@@ -70,10 +70,10 @@ fn vertex(input : VertexInput) -> VertexOutput {
     var output : VertexOutput;
     let positionFromLight = scene.lightViewProjMatrix * model.modelMatrix * vec4(input.position, 1);
     
-    output.shadowPosition = vec3(
-        positionFromLight.xy * vec2(0.5, -0.5) + vec2(0.5),
-        positionFromLight.z
-    );
+    output.shadowPosition =vec3(positionFromLight.xyz); //= vec3(
+    //     positionFromLight.xy * vec2(0.5, -0.5) + vec2(0.5),
+    //     positionFromLight.z
+    // );
 
     output.texcoords = input.texcoords;
     output.normal = model.normalMatrix * input.normal;

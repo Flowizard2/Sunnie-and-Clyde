@@ -168,11 +168,11 @@ export class Renderer extends BaseRenderer {
 
         // SHADOW MAP SAMPLER
         this.shadowSampler = this.device.createSampler({
-            magFilter: 'linear',
-            minFilter: 'linear',
-            mipmapFilter: 'linear',
-            addressModeU: 'clamp-to-edge',
-            addressModeV: 'clamp-to-edge',
+            // magFilter: 'linear',
+            // minFilter: 'linear',
+            // mipmapFilter: 'linear',
+            // addressModeU: 'clamp-to-edge',
+            // addressModeV: 'clamp-to-edge',
             compare: 'less',
         });
 
@@ -272,6 +272,7 @@ export class Renderer extends BaseRenderer {
         });
 
         this.recreateDepthTexture();
+        // this.encoder = this.device.createCommandEncoder();
     }
 
     recreateDepthTexture() {
@@ -424,7 +425,7 @@ export class Renderer extends BaseRenderer {
     // }
 
     renderShadowMap(scene, camera, light) {
-        const encoder = this.device.createCommandEncoder();
+       this.encoder = this.device.createCommandEncoder();
         const passDescriptor = {
             colorAttachments: [
                 // {
@@ -435,13 +436,13 @@ export class Renderer extends BaseRenderer {
                 // }
             ],
             depthStencilAttachment: {
-                view: this.shadowDepthTexture.createView(),
+                view: this.shadowDepthTextureView,//.createView(),
                 depthClearValue: 1.0,
                 depthLoadOp: 'clear',
                 depthStoreOp: 'store', 
             },
         };
-        this.renderPass = encoder.beginRenderPass(passDescriptor);
+        this.renderPass = this.encoder.beginRenderPass(passDescriptor);
         this.renderPass.setPipeline(this.shadowPipeline);
     
         // Set up light camera bind group and render the scene
@@ -451,7 +452,10 @@ export class Renderer extends BaseRenderer {
         const cameraComponent = camera.getComponentOfType(Camera);
         const viewMatrix = getGlobalViewMatrix(camera);
         const projectionMatrix = getProjectionMatrix(camera);
-        this.lightProjectionMatrix = projectionMatrix;      // Shranimo matriko za kasnejso uporabo.
+        this.lightViewProjectionMatrix = mat4.create();
+        console.log("prej: ",this.lightViewProjectionMatrix);
+        mat4.multiply(this.lightViewProjectionMatrix, projectionMatrix, viewMatrix);      // Shranimo matriko za kasnejso uporabo.
+        console.log("potem: ",this.lightViewProjectionMatrix);
         const { cameraUniformBuffer, cameraBindGroup } = this.prepareCamera(cameraComponent);
         this.device.queue.writeBuffer(cameraUniformBuffer, 0, viewMatrix);
         this.device.queue.writeBuffer(cameraUniformBuffer, 64, projectionMatrix);
@@ -474,7 +478,7 @@ export class Renderer extends BaseRenderer {
         //Konec poskusne kode
 
         this.renderPass.end();
-        this.device.queue.submit([encoder.finish()]);
+        // this.device.queue.submit([encoder.finish()]);
     }
     
 
@@ -483,8 +487,8 @@ export class Renderer extends BaseRenderer {
             this.recreateDepthTexture();
         }
 
-        const encoder = this.device.createCommandEncoder();
-        this.renderPass = encoder.beginRenderPass({
+        // const encoder = this.device.createCommandEncoder();
+        this.renderPass = this.encoder.beginRenderPass({
             colorAttachments: [
                 {
                     view: this.context.getCurrentTexture().createView(),
@@ -497,9 +501,9 @@ export class Renderer extends BaseRenderer {
                 view: this.depthTexture.createView(),
                 depthClearValue: 1,
                 depthLoadOp: 'clear',
-                depthStoreOp: 'discard',
+                depthStoreOp: 'store',
                 stencilLoadOp: 'clear',
-                stencilStoreOp: 'discard',
+                stencilStoreOp: 'store',
             },
         });
         this.renderPass.setPipeline(this.perFragment ? this.pipelinePerFragment : this.pipelinePerVertex);
@@ -520,7 +524,7 @@ export class Renderer extends BaseRenderer {
         const { sceneUniformBuffer, lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent, false);
         this.device.queue.writeBuffer(lightUniformBuffer, 0, lightColor);
         this.device.queue.writeBuffer(lightUniformBuffer, 16, lightDirection);
-        this.device.queue.writeBuffer(sceneUniformBuffer, 0, this.lightProjectionMatrix);   // To je za sence
+        this.device.queue.writeBuffer(sceneUniformBuffer, 0, this.lightViewProjectionMatrix);   // To je za sence
         this.renderPass.setBindGroup(1, lightBindGroup);
         //this.device.queue.writeBuffer(lightUniformBuffer, 32, lightIntensity);
 
@@ -534,7 +538,7 @@ export class Renderer extends BaseRenderer {
         this.renderNode(scene);
 
         this.renderPass.end();
-        this.device.queue.submit([encoder.finish()]);
+        this.device.queue.submit([this.encoder.finish()]);
     }
 
     renderNode(node, modelMatrix = mat4.create()) {

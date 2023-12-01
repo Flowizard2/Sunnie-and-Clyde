@@ -163,7 +163,7 @@ camera2.aabb = {
     min: [-0.2, -0.2, -0.2],
     max: [0.2, 0.2, 0.2],
 };
-//camera2.getComponentOfType(Transform).translation = [0, 0, 0];
+camera2.getComponentOfType(Transform).translation = [0, 15, 0];
 
 const light = new Node();
 light.addComponent(new Light({
@@ -449,7 +449,10 @@ function render() {
   
    //CALL RENDER SHADOW MAP BEFORE RENDER (Z novo kamero)  renderer.renderShadowMap(scene, camera2, light);
    //camera2.getComponentOfType(Camera).orthographic = 1;
-   renderer.renderShadowMap(scene, camera, light);
+   //camera.getComponentOfType(Camera).near = 3e-17;
+   //camera.getComponentOfType(Transform).rotation = [1,0,0,1];
+   camera2.getComponentOfType(Camera).orthographic = 1;
+   renderer.renderShadowMap(scene, camera2, light);
   
    
    renderer.render(scene, camera, light);
