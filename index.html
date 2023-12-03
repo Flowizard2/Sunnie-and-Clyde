@@ -2,38 +2,113 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>First person controls</title>
+    <title>Sunnie and Clyde</title>
     <script src="./lib/gl-matrix-min.js"></script>
     <script src="./lib/dat.gui.min.js"></script>
     <script type="module" src="main2.js"></script>
     <link rel="stylesheet" href="./common/style.css">
 
     <style>
-        #btn1 {position:absolute;left:80px; top:28px; width:55px; height:55px}
-        #btn2 {position:absolute;left:190px; top:28px;  width:55px; height:55px}
-        #btn3 {position:absolute;left:300px; top:28px;  width:55px; height:55px}
+        #homeButton {position:fixed;left:20px; top:20px; width:200px; z-index:8;}
+        #playButton {position:fixed;left:1300px; top:20px;width:200px; z-index: 8; }
+        #pauseButton {position:fixed;left:1300px; top:22px;width:200px; z-index: 10;}
+        #podlaga{position:fixed;left:550px; top:250px;width:500px; z-index: 10; visibility: hidden;} 
+        #yesButton {position:fixed;left:620px; top:315px;width:250px; z-index: 10; visibility:hidden}
+        #noButton {position:fixed;left:740px; top:321px;width:222px; z-index: 10;visibility: hidden;}
+        #GamePaused {position:fixed;left:400px; top:300px;width:800px; z-index: 10; visibility: hidden;}
         div#igra {
-            position:relative;
-            width:512;
-            height: 512;
+            position:fixed;
+            width:2560px;
+            height:1440px;
         }
+        canvas {
+            position: fixed;
+            left : 0px;
+            top : 0px;
+        }
+        #canvasContainer {
+             position: relative;
+        }
+
+      
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            pointer-events: none; /* Allows clicks to pass through */
+            display: none; /* Initially hidden */
+        }
+
+        #webgpuCanvas {
+            display: block; /* Removes the default canvas margin */
+        }
+
     </style>
 </head>
 <body>
     <div id = "igra">
-    <input id='btn1' type="image" onClick="funkcija1()" src="zajec.png">
-    <input id='btn2' type="image" onClick="odpriOkno()" src="luna.png">
-    <input id='btn3' type="image" onClick="funkcija3()" src="winter.png" >
-    <div class="fullscreen no-touch pixelated">
-        <canvas></canvas>
+    <input id='homeButton' type="image" onClick="popUpObvestilo()" src="./Gumbi/homeButton.png">
+    <input id='playButton' type="image" onClick="zamenjajPlay()" src="./Gumbi/playButton.png">
+    <input id='pauseButton' type="image" onClick="zamenjajPause()" src="./Gumbi/pauseButton.png" >
+    <div><img id='podlaga'src="./Gumbi/notificationPodlaga.png" ></div>
+    <div><img id='GamePaused'src="./Gumbi/GamePausedText.png" ></div>
+    <input id='yesButton' type="image" onClick="funkcija1()" src="./Gumbi/yesButton.png" >
+    <input id='noButton' type="image" onClick="funkcija3()" src="./Gumbi/noButton.png" >
+    <div class="fullscreen no-touch pixelated" id="canvasContainer">
+        
+        <canvas width="2560" height="1440"></canvas>
+        <div id="overlay" style="display: none;"></div>
     </div>
    <!-- <audio src="./sinnesloschen-beam-117362.mp3" id="pesem" loop="loop"></audio> -->
     </div>
 <script>
-funkcija1 = function(){
-    window.location.href = "home.html";
-}
+    var soundHome = new Audio("./Sounds/buttonHomeTrimmed.mp3");
+    var soundPause = new Audio("./Sounds/buttonPauseTrimmed.mp3");
 
+    function showOverlay() {
+        const overlay = document.getElementById('overlay');
+        overlay.style.display = 'block'; // Show the overlay
+    }
+    function hideOverlay() {
+        const overlay = document.getElementById('overlay');
+        overlay.style.display = 'none'; // Hide the overlay
+    }
+
+
+    function zamenjajPause(){
+        soundPause.play();
+        showOverlay();
+        document.getElementById("pauseButton").style.visibility = "hidden";
+        document.getElementById("GamePaused").style.visibility = "visible";
+        soundPause.currentTime = 0;
+
+
+    }   
+    function zamenjajPlay(){
+        soundPause.play();
+        hideOverlay();
+        document.getElementById("pauseButton").style.visibility = "visible";
+        document.getElementById("GamePaused").style.visibility = "hidden";
+        soundPause.currentTime = 0;
+    }
+    function popUpObvestilo(){
+        
+        soundHome.play();
+        showOverlay();
+        document.getElementById("podlaga").style.visibility = "visible";
+        document.getElementById("yesButton").style.visibility = "visible";
+        document.getElementById("noButton").style.visibility = "visible";
+        document.getElementById("pauseButton").style.visibility = "hidden";
+        soundHome.currentTime = 0;
+    }
+    window.addEventListener('resize', () => {
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        // Do not change canvas.width and canvas.height as it would resize the drawing buffer
+    });
 </script>
 </body>
 </html>

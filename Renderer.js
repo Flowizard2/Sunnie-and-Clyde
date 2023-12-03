@@ -453,9 +453,7 @@ export class Renderer extends BaseRenderer {
         const viewMatrix = getGlobalViewMatrix(camera);
         const projectionMatrix = getProjectionMatrix(camera);
         this.lightViewProjectionMatrix = mat4.create();
-        console.log("prej: ",this.lightViewProjectionMatrix);
         mat4.multiply(this.lightViewProjectionMatrix, projectionMatrix, viewMatrix);      // Shranimo matriko za kasnejso uporabo.
-        console.log("potem: ",this.lightViewProjectionMatrix);
         const { cameraUniformBuffer, cameraBindGroup } = this.prepareCamera(cameraComponent);
         this.device.queue.writeBuffer(cameraUniformBuffer, 0, viewMatrix);
         this.device.queue.writeBuffer(cameraUniformBuffer, 64, projectionMatrix);
