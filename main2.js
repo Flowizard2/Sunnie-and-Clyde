@@ -243,8 +243,6 @@ document.addEventListener('keydown', (event) => {
     cloudTransform.translation = cloudPosition;
 });
 
-
-
 const physics = new Physics(scene);
 scene.traverse(node => {
     // console.log("Processing Node:", node.name)
@@ -449,9 +447,11 @@ function render() {
   
    //CALL RENDER SHADOW MAP BEFORE RENDER (Z novo kamero)  renderer.renderShadowMap(scene, camera2, light);
    //camera2.getComponentOfType(Camera).orthographic = 1;
-   //camera.getComponentOfType(Camera).near = 3e-17;
+    camera2.getComponentOfType(Camera).near = 14.8;
+    //camera2.getComponentOfType(Camera).fovy = 0.5;
+   // camera2.getComponentOfType(Camera).far = 1000;
    //camera.getComponentOfType(Transform).rotation = [1,0,0,1];
-   camera2.getComponentOfType(Camera).orthographic = 1;
+   camera2.getComponentOfType(Camera).orthographic = 0;
    renderer.renderShadowMap(scene, camera2, light);
   
    

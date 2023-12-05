@@ -3,6 +3,7 @@ import { vec3, mat3, mat4 } from './lib/gl-matrix-module.js';
 import * as WebGPU from './common/engine/WebGPU.js';
 
 import { Camera } from './common/engine/core.js';
+import { Transform } from './common/engine/core/Transform.js';
 import { BaseRenderer } from './common/engine/renderers/BaseRenderer.js';
 
 import {
@@ -201,9 +202,9 @@ export class Renderer extends BaseRenderer {
                 depthWriteEnabled: true,
                 depthCompare: 'less',
             },
-            primitive: {
-                topology: 'triangle-list'
-            },
+            // primitive: {
+            //     topology: 'triangle-list'
+            // },
             layout :  this.device.createPipelineLayout({
                 bindGroupLayouts: [
                     this.cameraBindGroupLayout,
@@ -284,7 +285,14 @@ export class Renderer extends BaseRenderer {
         });
     }
 
+    drawingDepthTexture(){
+        const depthTexture = device.createTexture({
+            size: { width: canvas.width, height: canvas.height, depthOrArrayLayers: 1 },
+            format: 'depth24plus-stencil8',
+            usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
+        });
 
+    }
 
     prepareNode(node) {
         if (this.gpuObjects.has(node)) {
@@ -447,13 +455,50 @@ export class Renderer extends BaseRenderer {
     
         // Set up light camera bind group and render the scene
         // LOOP THROUGH ALL OBJECTS AND RENDER THEM
-
-        //Poskusna koda
+        //Poskusna koda        
         const cameraComponent = camera.getComponentOfType(Camera);
         const viewMatrix = getGlobalViewMatrix(camera);
         const projectionMatrix = getProjectionMatrix(camera);
         this.lightViewProjectionMatrix = mat4.create();
         mat4.multiply(this.lightViewProjectionMatrix, projectionMatrix, viewMatrix);      // Shranimo matriko za kasnejso uporabo.
+
+        //Poskusimo svoje matrike 
+        // const lightPosition = vec3.fromValues(camera.getComponentOfType(Transform).translation[0], camera.getComponentOfType(Transform).translation[1], camera.getComponentOfType(Transform).translation[2]);
+        
+        // let upVector = vec3.fromValues(0, 1, 0);
+        // let origin = vec3.fromValues(0, 0, 0);
+        // let lightViewMatrix = mat4.create();
+        // mat4.lookAt(lightViewMatrix,lightPosition, origin, upVector);
+        // let lightProjectionMatrix = mat4.create();
+        // {
+        //     const left = -80;
+        //     const right = 80;
+        //     const bottom = -80;
+        //     const top = 80;
+        //     const near = -200;
+        //     const far = 300;
+        //     mat4.ortho(lightProjectionMatrix,left, right, bottom, top, near, far);
+        // }
+        // {
+        //     const fovy = camera.getComponentOfType(Camera).fovy;
+        //     const aspect = camera.getComponentOfType(Camera).aspect;
+        //     const near = camera.getComponentOfType(Camera).near;
+        //     const far = camera.getComponentOfType(Camera).far;
+        //     console.log(fovy, aspect, near, far);
+        //     mat4.ortho(lightProjectionMatrix, fovy, aspect, near, far);
+        // }
+
+        
+        // let lightViewProjMatrix2 =mat4.create();
+        //  mat4.multiply(lightViewProjMatrix2,
+        //     lightProjectionMatrix,
+        //     lightViewMatrix
+        // );
+        // this.lightViewProjectionMatrix = lightViewProjMatrix2;
+        // const viewMatrix2 = lightViewMatrix;
+        // const projectionMatrix2 = lightProjectionMatrix;
+        //Konec svojih matrik
+
         const { cameraUniformBuffer, cameraBindGroup } = this.prepareCamera(cameraComponent);
         this.device.queue.writeBuffer(cameraUniformBuffer, 0, viewMatrix);
         this.device.queue.writeBuffer(cameraUniformBuffer, 64, projectionMatrix);
@@ -500,6 +545,7 @@ export class Renderer extends BaseRenderer {
                 depthClearValue: 1,
                 depthLoadOp: 'clear',
                 depthStoreOp: 'store',
+                stencilClearValue: 0,
                 stencilLoadOp: 'clear',
                 stencilStoreOp: 'store',
             },

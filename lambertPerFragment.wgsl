@@ -70,10 +70,10 @@ fn vertex(input : VertexInput) -> VertexOutput {
     var output : VertexOutput;
     let positionFromLight = scene.lightViewProjMatrix * model.modelMatrix * vec4(input.position, 1);
     
-    output.shadowPosition =vec3(positionFromLight.xyz); //= vec3(
-    //     positionFromLight.xy * vec2(0.5, -0.5) + vec2(0.5),
-    //     positionFromLight.z
-    // );
+    output.shadowPosition = vec3(
+        positionFromLight.xy * vec2(0.5, -0.5) + vec2(0.5),
+        positionFromLight.z
+    );
 
     output.texcoords = input.texcoords;
     output.normal = model.normalMatrix * input.normal;
@@ -140,6 +140,7 @@ fn fragment(input : FragmentInput) -> @location(0) vec4<f32> {
     let lightingFactor = min(ambientFactor + visibility * lambert, 1.0);
     
     //output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
+    //return vec4(visibility, 0.0, 0.0, 1.0);
     return vec4(lightingFactor * albedo, 1.0);
     //return output;
 }
