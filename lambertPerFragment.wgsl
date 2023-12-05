@@ -65,6 +65,15 @@ struct Scene {
 const ambientFactor = 0.3;
 
 
+// Homogenizirat, ce ni ortografska. Ce je ortografska, pa ne.
+// Vrednosti x in y morajo biti med 0 in 1.
+// Izriseva teksturo.
+// Cifre morajo biti med rdeco in zeleno
+// Poglejta ce se shadow map pravilno narise. To je 'z'.
+// Probita dobit samo texturo od shadow mapa
+// Nov shader, ki samo vzame teksturo in jo narise na zaslon.
+// Ko ves enkrat da je tekstura v redu, je samo se vprasanje, ce je transformacija v redu.
+// Al je tekstura al je pa transformacija problem. Drugo skor ne more bit.
 @vertex
 fn vertex(input : VertexInput) -> VertexOutput {
     var output : VertexOutput;

@@ -67,21 +67,21 @@ const lightBindGroupLayout = {
             buffer: {
               type: 'uniform',
             },
-          },
-          {
+        },
+        {
             binding: 2,
             visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
             texture: {
               sampleType: 'depth',
             },
-          },
-          {
+        },
+        {
             binding: 3,
             visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
             sampler: {
               type: 'comparison',
             },
-          },
+        },
     ],
 };
 const lightBindGroupLayoutShadow = {
@@ -156,7 +156,7 @@ export class Renderer extends BaseRenderer {
         this.shadowDepthTexture = this.device.createTexture({
             size: { width: 2048, height: 2048, depthOrArrayLayers: 1 },
             format: 'depth32float',
-            usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
+            usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST
         });
         this.shadowDepthTextureView = this.shadowDepthTexture.createView();
 
@@ -432,6 +432,131 @@ export class Renderer extends BaseRenderer {
     //     return vrniOba;
     // }
 
+    async showShadowMap() {
+        const showShadowMapShaderCode = await fetch('showShadowMapShader.wgsl').then(response => response.text());
+        const showShadowMapShaderModule = this.device.createShaderModule({ code: showShadowMapShaderCode });
+
+        const vertexBufferLayout2 = {
+            arrayStride: 16,
+            attributes: [
+                {
+                    name: 'position',
+                    shaderLocation: 0,
+                    offset: 0,
+                    format: 'float32x2',
+                },
+                {
+                    name: 'texcoords',
+                    shaderLocation: 1,
+                    offset: 8,
+                    format: 'float32x2',
+                },
+            ],
+        };
+
+        // pipeline
+        this.pipelinePerFragmentShadowMap = await this.device.createRenderPipelineAsync({
+            vertex: {
+                module: showShadowMapShaderModule,
+                entryPoint: 'vertex',
+                buffers: [ vertexBufferLayout2 ],
+            },
+            fragment: {
+                module: showShadowMapShaderModule,
+                entryPoint: 'fragment',
+                targets: [{ format: this.format }],
+            },
+            layout: 'auto', 
+        });
+
+        // quad
+        const vertexData = new Float32Array([
+            // positions   // texture coordinates
+            -1.0, -1.0,    0.0, 0.0,
+             1.0, -1.0,    1.0, 0.0,
+            -1.0,  1.0,    0.0, 1.0,
+             1.0,  1.0,    1.0, 1.0,
+        ]);
+
+        // buffer
+        const vertexBufferShowShadow = this.device.createBuffer({
+            size: vertexData.byteLength,
+            usage: GPUBufferUsage.VERTEX,
+            mappedAtCreation: true,
+        });
+        new Float32Array(vertexBufferShowShadow.getMappedRange()).set(vertexData);
+        vertexBufferShowShadow.unmap();
+
+        const indices = new Uint32Array([
+            0, 1, 2,
+            2, 1, 3,
+        ]);
+
+        const indexBufferShowShadow = this.device.createBuffer({
+            size: indices.byteLength,
+            usage: GPUBufferUsage.INDEX,
+            mappedAtCreation: true,
+        });
+
+        new Uint32Array(indexBufferShowShadow.getMappedRange()).set(indices);
+        indexBufferShowShadow.unmap();
+
+        const sampler = this.device.createSampler({
+            magFilter: 'nearest',
+            minFilter: 'nearest',
+        });
+        
+        const bindGroupShowShadow = this.device.createBindGroup({
+            layout: this.pipelinePerFragmentShadowMap.getBindGroupLayout(0),
+            entries: [
+                {
+                    binding: 0,
+                    resource: this.shadowDepthTexture.createView(),
+                },
+                {
+                    binding: 1,
+                    resource: sampler,
+                },
+            ],
+        });
+
+        const encoderShadow = this.device.createCommandEncoder();
+        const renderPass = encoderShadow.beginRenderPass({
+            colorAttachments: [
+                {
+                    view: this.context.getCurrentTexture().createView(),
+                    clearValue: [1, 1, 1, 1],
+                    loadOp: 'clear',
+                    storeOp: 'store',
+                }
+            ]
+        });
+        renderPass.setPipeline(this.pipelinePerFragmentShadowMap);
+        renderPass.setBindGroup(0, bindGroupShowShadow);
+        renderPass.setVertexBuffer(0, vertexBufferShowShadow);
+        renderPass.setIndexBuffer(indexBufferShowShadow, 'uint32');
+        renderPass.drawIndexed(6);
+        renderPass.end();
+        this.device.queue.submit([encoderShadow.finish()]);
+
+        // bind group layout
+        // const showShadowMapBindGroupLayout = {
+        //     entries: [
+        //         {
+        //             binding: 2,
+        //             visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+        //             texture: {
+        //                 sampleType: 'depth',
+        //             },
+        //         },
+        //     ],
+        // };
+
+
+
+
+    }
+
     renderShadowMap(scene, camera, light) {
        this.encoder = this.device.createCommandEncoder();
         const passDescriptor = {
@@ -521,7 +646,7 @@ export class Renderer extends BaseRenderer {
         //Konec poskusne kode
 
         this.renderPass.end();
-        // this.device.queue.submit([encoder.finish()]);
+        // this.device.queue.submit([this.encoder.finish()]);
     }
     
 

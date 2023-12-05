@@ -45,7 +45,7 @@ const loader = new GLTFLoader();
 await loader.load('scena3.gltf');
 
 const rjavaMaterial = loader.loadMaterial(0);
-// const zelenaMaterial = loader.loadMaterial(???);
+const zelenaMaterial = loader.loadMaterial(5); //4 ta je najbrz prava
 
 // Map of tile names to their material indices
 const tileMaterialMap = {
@@ -297,9 +297,13 @@ function getNodePosition(nodeName) {
 
 
 
-// Timers for each tile
-const tileTimers = {};
-Object.keys(tileMaterialMap).forEach(tile => tileTimers[tile] = 0);
+// Timers for each tile for Clyde
+const tileTimersClyde = {};
+Object.keys(tileMaterialMap).forEach(tile => tileTimersClyde[tile] = 0);
+
+// Timers for each tile for Sunnie
+const tileTimersSunnie = {};
+Object.keys(tileMaterialMap).forEach(tile => tileTimersSunnie[tile] = 0);
 //console.log("tiletimers: ", tileTimers);
 
 // Function to check if Clyde is above a tile
@@ -315,16 +319,16 @@ function isClydeAboveTile(clydePosition, tilePosition, thresholdX = 0.8, thresho
     return distanceX <= thresholdX && distanceY <= thresholdY;
 }
 
-function isSunnieAboveTile(sunniePosition, tileX, tileY, thresholdX = 0.8, thresholdY = 1.3) {
+function isSunnieAboveTile(sunniePosition, tilePosition, thresholdX = 0.8, thresholdY = 1.3) {
     // Check if Sunnie is within a certain distance (threshold) in the 'x' and 'y' axes
-    const distanceX = Math.abs(sunniePosition[0] - tileX);
-    const distanceY = Math.abs(sunniePosition[2] - tileY);
+    const distanceX = Math.abs(sunniePosition[0] - tilePosition[0]);
+    const distanceY = Math.abs(sunniePosition[2] - tilePosition[2]);
 
     return distanceX <= thresholdX && distanceY <= thresholdY;
 }
 
 // Function to change the texture of a tile
-function changeTileTexture(tileName, newTextureIndex) {
+function changeTileTexture(tileName, character) {
     // const materialIndex = tileMaterialMap[tileName];
     
     const tile = getNodeByName(tileName)
@@ -337,7 +341,12 @@ function changeTileTexture(tileName, newTextureIndex) {
     // mesh.primitives[0].material = newTextureIndex;
 
     const tileModel = tile.getComponentOfType(Model);
-    tileModel.primitives[0].addMaterial(rjavaMaterial);
+    if(character == "sunnie") {
+        tileModel.primitives[0].addMaterial(rjavaMaterial);
+    } else if (character == "clyde") {
+        tileModel.primitives[0].addMaterial(rjavaMaterial);
+    }
+    
 
 
     // mesh.primitives.forEach(primitive => {
@@ -387,7 +396,7 @@ function izberiCilj() {
     let indeks_izbranega_tilea = Math.floor(Math.random() * 72);
 
     // Ce je ta tile ze posusen, izberemo novega.
-    while(indeks_izbranega_tilea[2] == 1) {
+    while(tabelaPobarvanihTileov[indeks_izbranega_tilea][2] == 1) {
         indeks_izbranega_tilea = Math.floor(Math.random() * 72);
     }
 
@@ -411,30 +420,44 @@ function update(time, dt) {
     if(stPosusenihPolj != 72) {
         // Ce je Clyde nad tile-om, se spremeni texture tile-a
         const clydePosition = getNodePosition("Clyde");
-        const sunniePosition2 = getNodePosition("Sunnie");
+        const sunniePosition = getNodePosition("Sunnie");
         //console.log("SunniePosition: ", sunniePosition2);
 
-        Object.keys(tileTimers).forEach(tile => {
+        Object.keys(tileTimersClyde).forEach(tile => {
             //console.log("tile: ", tile);
             const tilePosition = getNodePosition(tile);
             //console.log("NodeName: ", getNodeByName(tile))
             
             if (isClydeAboveTile(clydePosition, tilePosition)) {
-                tileTimers[tile] += dt;
-                if (tileTimers[tile] >= 1.5) {
-                    changeTileTexture(tile, 6 /* newTextureIndex */);
+                tileTimersClyde[tile] += dt;
+                if (tileTimersClyde[tile] >= 0.3) {
+                    changeTileTexture(tile, "clyde" /* newTextureIndex */);
                     stPosusenihPolj -= 1;
-                    tileTimers[tile] = 0; // Reset the timer
+                    tileTimersClyde[tile] = 0; // Reset the timer
                 }
             } else {
-                tileTimers[tile] = 0; // Reset if Clyde moves away
+                tileTimersClyde[tile] = 0; // Reset if Clyde moves away
+            }
+
+            // if (isSunnieAboveTile(sunniePosition, tabelaPobarvanihTileov[sunnieCilj][0], tabelaPobarvanihTileov[sunnieCilj][1])) {
+            if (isSunnieAboveTile(sunniePosition, tilePosition)) {
+                // const x_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][0];
+                // const y_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][1];
+                tileTimersSunnie[tile] += dt;
+                if (tileTimersSunnie[tile] >= 0.3) {
+                    changeTileTexture(tile, "sunnie" /* newTextureIndex */);
+                    stPosusenihPolj += 1;
+                    tileTimersSunnie[tile] = 0; // Reset the timer
+                }
+            } else {
+                tileTimersSunnie[tile] = 0; // Reset if Sunnie moves away
             }
         });
 
         // Premikanje sonca
-        if (isSunnieAboveTile(sunniePosition, tabelaPobarvanihTileov[sunnieCilj][0], tabelaPobarvanihTileov[sunnieCilj][1])) {
+        // if (isSunnieAboveTile(sunniePosition, tabelaPobarvanihTileov[sunnieCilj][0], tabelaPobarvanihTileov[sunnieCilj][1])) {
             
-        }
+        // }
 
     } else {
         console.log("GAME OVER!")
@@ -447,14 +470,16 @@ function render() {
   
    //CALL RENDER SHADOW MAP BEFORE RENDER (Z novo kamero)  renderer.renderShadowMap(scene, camera2, light);
    //camera2.getComponentOfType(Camera).orthographic = 1;
-    camera2.getComponentOfType(Camera).near = 14.8;
+   // camera2.getComponentOfType(Camera).near = 14.8;
     //camera2.getComponentOfType(Camera).fovy = 0.5;
-   // camera2.getComponentOfType(Camera).far = 1000;
+   camera2.getComponentOfType(Camera).far = 20;
    //camera.getComponentOfType(Transform).rotation = [1,0,0,1];
-   camera2.getComponentOfType(Camera).orthographic = 0;
+   camera2.getComponentOfType(Camera).orthographic = 1;
+
    renderer.renderShadowMap(scene, camera2, light);
   
-   
+   //renderer.showShadowMap();
+
    renderer.render(scene, camera, light);
 }
 
