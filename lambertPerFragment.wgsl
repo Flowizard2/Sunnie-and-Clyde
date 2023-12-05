@@ -1,4 +1,4 @@
-override shadowDepthTextureSize: f32 = 2048.0;
+override shadowDepthTextureSize: f32 = 8192.0; //2048.0;
 
 struct VertexInput {
     @location(0) position : vec3f,
@@ -9,14 +9,16 @@ struct VertexInput {
 struct VertexOutput {
     @location(0) shadowPosition : vec3f,
     @builtin(position) position : vec4f,
-    @location(1) texcoords : vec2f,
-    @location(2) normal : vec3f,
+    @location(1) fragPos : vec3f,
+    @location(2) texcoords : vec2f,
+    @location(3) normal : vec3f,
 }
 
 struct FragmentInput {
     @location(0) shadowPosition : vec3f,
-    @location(1) texcoords : vec2f,
-    @location(2) normal : vec3f,
+    @location(1) fragPos : vec3f,
+    @location(2) texcoords : vec2f,
+    @location(3) normal : vec3f,
 }
 
 struct FragmentOutput {
@@ -62,7 +64,7 @@ struct Scene {
 @group(3) @binding(2) var baseSampler : sampler;
 
 // const albedo = vec3<f32>(0.9);
-const ambientFactor = 0.3;
+const ambientFactor = 0.5;
 
 
 // Homogenizirat, ce ni ortografska. Ce je ortografska, pa ne.
@@ -87,6 +89,7 @@ fn vertex(input : VertexInput) -> VertexOutput {
     output.texcoords = input.texcoords;
     output.normal = model.normalMatrix * input.normal;
     output.position = camera.projectionMatrix * camera.viewMatrix * model.modelMatrix * vec4(input.position, 1);
+    output.fragPos = input.position.xyz;
     return output;
 }
 
@@ -100,11 +103,13 @@ fn fragment(input : FragmentInput) -> @location(0) vec4<f32> {
 
             visibility += textureSampleCompare(
                 shadowMap, shadowSampler,
-                input.shadowPosition.xy + offset, input.shadowPosition.z - 0.007
+                input.shadowPosition.xy + offset, input.shadowPosition.z - 0.03 //0.007
+                // Zamakniti moramo za tan(arccos(N skalarno L)) = 0.005
             );
         }
     }
     visibility /= 9.0;
+    //visibility += 0.2;
 
 
 
@@ -115,7 +120,8 @@ fn fragment(input : FragmentInput) -> @location(0) vec4<f32> {
     let L = light.direction;
 
     let lambert = max(dot(N, L), 0);
-
+    //let lambert = max(dot(normalize(vec3(0, 15, 0) - input.fragPos), normalize(input.normal)), 0.0);
+    //lambert -= 3;
     let shadowColor = vec3<f32>(0.008, 0.243, 0.541); // Pure blue
 
     let diffuseLight = lambert * light.color * 1.5;// * light.intensity;
@@ -146,7 +152,7 @@ fn fragment(input : FragmentInput) -> @location(0) vec4<f32> {
 
     
    
-    let lightingFactor = min(ambientFactor + visibility * lambert, 1.0);
+    let lightingFactor = min(ambientFactor + visibility * lambert, 1.3) -0.15;
     
     //output.color = pow(vec4(finalColor, 1), vec4(1 / gamma));
     //return vec4(visibility, 0.0, 0.0, 1.0);

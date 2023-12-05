@@ -154,7 +154,7 @@ export class Renderer extends BaseRenderer {
 
         // Initialize Shadow Mapping Resources
         this.shadowDepthTexture = this.device.createTexture({
-            size: { width: 2048, height: 2048, depthOrArrayLayers: 1 },
+            size: { width: 8192, height: 8192, depthOrArrayLayers: 1 },  //width: 2048, height: 2048
             format: 'depth32float',
             usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST
         });

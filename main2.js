@@ -45,7 +45,7 @@ const loader = new GLTFLoader();
 await loader.load('scena3.gltf');
 
 const rjavaMaterial = loader.loadMaterial(0);
-const zelenaMaterial = loader.loadMaterial(5); //4 ta je najbrz prava
+const zelenaMaterial = loader.loadMaterial(7); //4 ta je najbrz prava
 
 // Map of tile names to their material indices
 const tileMaterialMap = {
@@ -164,6 +164,8 @@ camera2.aabb = {
     max: [0.2, 0.2, 0.2],
 };
 camera2.getComponentOfType(Transform).translation = [0, 15, 0];
+camera2.getComponentOfType(Transform).rotation[2] += -0.15;
+//camera2.getComponentOfType(Transform).rotation[3] += -0.2;
 
 const light = new Node();
 light.addComponent(new Light({
@@ -344,7 +346,7 @@ function changeTileTexture(tileName, character) {
     if(character == "sunnie") {
         tileModel.primitives[0].addMaterial(rjavaMaterial);
     } else if (character == "clyde") {
-        tileModel.primitives[0].addMaterial(rjavaMaterial);
+        tileModel.primitives[0].addMaterial(zelenaMaterial);
     }
     
 
@@ -408,6 +410,14 @@ let sunnieCilj = izberiCilj();
 // Hranimo stevilo posusenih polj, ker ce so vsa posusena, se igra konca.
 let stPosusenihPolj = 0;
 
+// Depth first search za premikanje soncka
+
+function depthFirstSearch() {
+
+}
+
+let prejsnjaPozicijaSunnie = getNodePosition("Sunnie");
+
 function update(time, dt) {
     scene.traverse(node => {
         for (const component of node.components) {
@@ -417,7 +427,7 @@ function update(time, dt) {
 
     physics.update(time, dt);
 
-    if(stPosusenihPolj != 72) {
+    if(stPosusenihPolj < 72) {
         // Ce je Clyde nad tile-om, se spremeni texture tile-a
         const clydePosition = getNodePosition("Clyde");
         const sunniePosition = getNodePosition("Sunnie");
@@ -430,7 +440,7 @@ function update(time, dt) {
             
             if (isClydeAboveTile(clydePosition, tilePosition)) {
                 tileTimersClyde[tile] += dt;
-                if (tileTimersClyde[tile] >= 0.3) {
+                if (tileTimersClyde[tile] >= 0.1) {
                     changeTileTexture(tile, "clyde" /* newTextureIndex */);
                     stPosusenihPolj -= 1;
                     tileTimersClyde[tile] = 0; // Reset the timer
@@ -441,10 +451,8 @@ function update(time, dt) {
 
             // if (isSunnieAboveTile(sunniePosition, tabelaPobarvanihTileov[sunnieCilj][0], tabelaPobarvanihTileov[sunnieCilj][1])) {
             if (isSunnieAboveTile(sunniePosition, tilePosition)) {
-                // const x_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][0];
-                // const y_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][1];
                 tileTimersSunnie[tile] += dt;
-                if (tileTimersSunnie[tile] >= 0.3) {
+                if (tileTimersSunnie[tile] >= 0.1) {
                     changeTileTexture(tile, "sunnie" /* newTextureIndex */);
                     stPosusenihPolj += 1;
                     tileTimersSunnie[tile] = 0; // Reset the timer
@@ -455,9 +463,37 @@ function update(time, dt) {
         });
 
         // Premikanje sonca
-        // if (isSunnieAboveTile(sunniePosition, tabelaPobarvanihTileov[sunnieCilj][0], tabelaPobarvanihTileov[sunnieCilj][1])) {
-            
-        // }
+        const speedSunnie = 0.2;
+        const x_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][0];
+        const y_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][1];      
+
+        let aliSeJePremaknil = false;
+
+        if(sunniePosition[0] < (x_coor_cilj - 0.3)) {
+            sunniePosition[0] += speedSunnie;
+            aliSeJePremaknil = true;
+        } else if(sunniePosition[0] > (x_coor_cilj + 0.3)) {
+            sunniePosition[0] -= speedSunnie;
+            aliSeJePremaknil = true;
+        }
+
+        if(sunniePosition[2] < (y_coor_cilj - 0.3)) {
+            sunniePosition[2] += speedSunnie;
+            aliSeJePremaknil = true;
+        } else if(sunniePosition[2] > (y_coor_cilj + 0.3)) {
+            sunniePosition[2] -= speedSunnie;
+            aliSeJePremaknil = true;
+        }
+
+        console.log("Sunnie position: ", sunniePosition);
+        console.log("Prejsnji position: ", prejsnjaPozicijaSunnie);
+
+        //let sunniePos = getNodePosition('Sunnie');
+        if((aliSeJePremaknil == false) || (prejsnjaPozicijaSunnie == sunniePosition)) {
+            sunnieCilj = izberiCilj();
+        }
+
+        prejsnjaPozicijaSunnie = sunniePosition;
 
     } else {
         console.log("GAME OVER!")
@@ -470,9 +506,9 @@ function render() {
   
    //CALL RENDER SHADOW MAP BEFORE RENDER (Z novo kamero)  renderer.renderShadowMap(scene, camera2, light);
    //camera2.getComponentOfType(Camera).orthographic = 1;
-   // camera2.getComponentOfType(Camera).near = 14.8;
+   //camera2.getComponentOfType(Camera).near = 0.3;
     //camera2.getComponentOfType(Camera).fovy = 0.5;
-   camera2.getComponentOfType(Camera).far = 20;
+   camera2.getComponentOfType(Camera).far = 30;
    //camera.getComponentOfType(Transform).rotation = [1,0,0,1];
    camera2.getComponentOfType(Camera).orthographic = 1;
 
