@@ -11,7 +11,7 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: -2;
+    z-index: 1;
 }
 
 .background-image {
@@ -21,7 +21,7 @@ body, html {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: -1; /* Ensures the image stays in the background */
+    z-index: 0; /* Ensures the image stays in the background */
 }
 
 .overlay {
@@ -33,11 +33,27 @@ body, html {
     align-items: center; /* Center items horizontally */
     text-align: center;
     padding-bottom: 30px; /* Padding at the bottom */
+    z-index: 2;
 }
 
 @font-face {
     font-family: 'EmotinalBaggage';
     src: url('./fonts/emotional_baggage/EmotionalBaggage-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'JusticeStory';
+    src: url('./fonts/justice_story/Justice_Story.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'NoraNotes';
+    src: url('./fonts/nora_notes/Nora_Notes.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'OctoberNight';
+    src: url('./fonts/october_night/October_Night.ttf') format('truetype');
 }
 
 .play-button, .instructions-button {
@@ -63,8 +79,75 @@ body, html {
 }
 
 .play-button:hover, .play-button:focus, .instructions-button:hover, .instructions-button:focus {
+    cursor: pointer;
     background-color: #0056b3; /* Slightly darker shade for hover effect */
     box-shadow: 0 2px #003875; /* Adjust shadow for pressed effect */
     transform: translateY(2px); /* Move button down to mimic pressing */
+}
+
+/* INSTRUCTIONS */
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 3; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #92d03d;
+    border-radius: 20px;
+    margin: 5% auto; /* 5% from the top and centered */
+    padding: 20px;
+    padding-top: 10px;
+    border: 2px solid #6e9d2e;
+    width: 30%; /* Could be more or less, depending on screen size */
+    max-width: 400px; /* Maximum width */
+    height: 70%; /* Adjust to control the height */
+    max-height: 600px; /* Maximum height */
+    box-shadow: 
+        3px 6px #6e9d2e, /* First shadow: blue shadow for depth */
+        5px 15px 10px rgba(0, 0, 0, 0.5); /* Second shadow: black shadow for cast effect */
+    transition: transform 0.3s ease; /* Smooth transition for transform */
+    overflow-y: auto; /* Allows scrolling inside the modal if content is long */
+    font-family: 'OctoberNight', sans-serif;
+    font-size: 25px;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.8);
+    color: #ae4119;
+}
+
+/* If you want to style specific elements like paragraphs or headings */
+.modal-content h2 {
+    margin-top: 5px;
+    font-family: 'EmotinalBaggage', sans-serif;
+    color: #ae4119; /* Specific color for headings */
+    font-size: 40px;
+    text-shadow: 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.modal-content:hover {
+    transform: translateY(2px); /* Slightly raise the modal on hover */
+}
+
+/* The Close Button */
+.close {
+    color: #ae4119;
+    float: right;
+    font-family: 'EmotinalBaggage', sans-serif;
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #803317;
+    text-decoration: none;
+    cursor: pointer;
 }
 

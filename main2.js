@@ -130,6 +130,14 @@ const tileMaterialMap = {
     "Polje_7_10": 71,
 };
 
+document.addEventListener('DOMContentLoaded', function(){
+    let playButton = document.querySelector(".play-button");
+    playButton.addEventListener('click', function(){
+        window.location.href = "index.html";
+        return false;
+    });
+  });
+
 
 //console.log("Default Scene: ", loader.defaultScene);
 const scene = loader.loadScene(loader.defaultScene);
@@ -458,9 +466,15 @@ let sunnieCilj = izberiCilj();
 // let aliJePavza = false;
 document.getElementById('pauseButton').addEventListener("click", pavzaPlayFunkcija);
 document.getElementById('playButton').addEventListener("click", pavzaPlayFunkcija);
+//document.getElementById('noButton').addEventListener("click", pavzaPlayFunkcija);
 function pavzaPlayFunkcija() {
     //console.log("klik na pavzo");
     aliJePavza = !aliJePavza;
+}
+
+document.getElementById('homeButton').addEventListener("click", homeButtonFunkcija);
+function homeButtonFunkcija() {
+    aliJePavza = true;
 }
 
 let prejsnjaPozicijaSunnie = getNodePosition("Sunnie").map((x) => x);

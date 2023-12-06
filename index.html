@@ -98,7 +98,7 @@
 
       
         #overlay {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -125,14 +125,14 @@
     <!-- <span id="health-text-left">0</span> -->
     <div id="health-bar-container">
         <div id="health-bar"></div>
-        <span id="health-text-right">30</span>
+        <span id="health-text-right"></span>
     </div>
     
 
     <div><img id='podlaga'src="./Gumbi/notificationPodlaga.png" ></div>
     <div><img id='GamePaused'src="./Gumbi/GamePausedText.png" ></div>
-    <input id='yesButton' type="image" onClick="funkcija1()" src="./Gumbi/yesButton.png" >
-    <input id='noButton' type="image" onClick="funkcija3()" src="./Gumbi/noButton.png" >
+    <input id='yesButton' type="image" onClick="goToHomePage()" src="./Gumbi/yesButton.png" >
+    <input id='noButton' type="image" onClick="noButtonHomePage()" src="./Gumbi/noButton.png" >
     <div class="fullscreen no-touch pixelated" id="canvasContainer">
         
         <canvas width="2560" height="1440"></canvas>
@@ -178,8 +178,19 @@
         document.getElementById("yesButton").style.visibility = "visible";
         document.getElementById("noButton").style.visibility = "visible";
         document.getElementById("pauseButton").style.visibility = "hidden";
+        document.getElementById("GamePaused").style.visibility = "hidden";
         soundHome.currentTime = 0;
     }
+    function goToHomePage() {
+        window.location.href = 'home2.html'; // Redirect to index.html
+    }
+    function noButtonHomePage() {
+        document.getElementById("podlaga").style.visibility = "hidden";
+        document.getElementById("yesButton").style.visibility = "hidden";
+        document.getElementById("noButton").style.visibility = "hidden";
+        document.getElementById("GamePaused").style.visibility = "visible";
+    }
+
     window.addEventListener('resize', () => {
         canvas.style.width = '100%';
         canvas.style.height = '100%';
