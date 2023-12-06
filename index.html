@@ -18,6 +18,70 @@
         #yesButton {position:fixed;left:37.66vw; top:40vh;width:17vw; z-index: 10; visibility:hidden}
         #noButton {position:fixed;left:46.1vw; top:41vh;width:15vw; z-index: 10;visibility: hidden;}
         #GamePaused {position:fixed;left:25vw; top:40vh;width:50vw; z-index: 10; visibility: hidden;}
+
+        /* #displayArea {
+            position:fixed;
+            left:45vw;
+            top:2vh;
+            width:10vw;
+            z-index:8;       
+        } */
+
+        /* #health {
+            position:fixed;
+            left:45vw;
+            top:6vh;
+            width:10vw;
+            z-index:8;       
+        } */
+
+        #health-bar-container {
+            width: 200px; /* Adjust to your desired width */
+            height: 30px; /* Adjust to your desired height */
+            background-color: #ae4119; /*#eee; /* Color for the empty part */
+            border-radius: 100px; /* Optional: for rounded corners */
+            overflow: hidden;
+            position: relative;
+            left: 45vw;
+            top: 6vh;
+            z-index: 8;
+            /*border: 2px solid #343434;*/
+            display: flex; /* Use flexbox for layout */
+            align-items: center; /* Center items vertically */
+        }
+
+        #health-bar {
+            height: 100%;
+            width: 100%; /* This will be dynamically adjusted with JavaScript */
+            background-color: #92d03d; /*#4caf50; /* Color for the filled part */
+            border-radius: 100px; /* Keep consistent with the container's radius */
+            transition: width 0.5s ease; /* Optional: for a smooth transition effect */
+        }
+
+        @font-face {
+            font-family: 'EmotinalBaggage';
+            src: url('./fonts/emotional_baggage/EmotionalBaggage-Regular.ttf') format('truetype');
+        }
+
+        #health-text-right {
+            position: absolute; /* Absolute positioning */
+            left: 50%; /* Center horizontally */
+            top: 50%; /* Center vertically */
+            transform: translate(-50%, -50%); /* Adjust for exact centering */
+            margin: 0; /* Reset margin */
+            /* margin: 0 10px; Space around the text */
+            font-size: 20px; /* Font size */
+            font-family: 'EmotinalBaggage', sans-serif;
+            color: white; /* Set text color to white */
+
+            /* Create a black border effect around the text */
+            /* text-shadow:
+                -2px -2px 0 #000,
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 2px  2px 0 #000; */
+        }
+
         div#igra {
             position:fixed;
             width:2560px;
@@ -52,9 +116,19 @@
 </head>
 <body>
     <div id = "igra">
+    <!-- <div id="displayArea"></div> -->
     <input id='homeButton' type="image" onClick="popUpObvestilo()" src="./Gumbi/homeButton.png">
     <input id='playButton' type="image" onClick="zamenjajPlay()" src="./Gumbi/playButton.png">
     <input id='pauseButton' type="image" onClick="zamenjajPause()" src="./Gumbi/pauseButton.png" >
+
+    <!-- <progress id="health" value="30" max="30"></progress> -->
+    <!-- <span id="health-text-left">0</span> -->
+    <div id="health-bar-container">
+        <div id="health-bar"></div>
+        <span id="health-text-right">30</span>
+    </div>
+    
+
     <div><img id='podlaga'src="./Gumbi/notificationPodlaga.png" ></div>
     <div><img id='GamePaused'src="./Gumbi/GamePausedText.png" ></div>
     <input id='yesButton' type="image" onClick="funkcija1()" src="./Gumbi/yesButton.png" >

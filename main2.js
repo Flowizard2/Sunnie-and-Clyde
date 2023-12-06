@@ -50,84 +50,84 @@ const zelenaMaterial = loader.loadMaterial(7); //4 ta je najbrz prava
 // Map of tile names to their material indices
 const tileMaterialMap = {
     // 1. vrsta
-    "Polje_1_0": 4, // Example, assuming "Circle" uses material index 4
-    "Polje_1_1": 4,
-    "Polje_1_2": 4,
-    "Polje_1_3": 4,
+    "Polje_1_0": 0, // Example, assuming "Circle" uses material index 4
+    "Polje_1_1": 1,
+    "Polje_1_2": 2,
+    "Polje_1_3": 3,
     "Polje_1_4": 4,
-    "Polje_1_5": 4,
-    "Polje_1_6": 4,
-    "Polje_1_7": 4,
-    "Polje_1_8": 4,
+    "Polje_1_5": 5,
+    "Polje_1_6": 6,
+    "Polje_1_7": 7,
+    "Polje_1_8": 8,
     // 2. vrsta
-    "Polje_2_0": 4,
-    "Polje_2_1": 4,
-    "Polje_2_2": 4,
-    "Polje_2_3": 4,
-    "Polje_2_4": 4,
-    "Polje_2_5": 4,
-    "Polje_2_6": 4,
-    "Polje_2_7": 4,
-    "Polje_2_8": 4,
-    "Polje_2_9": 4,
+    "Polje_2_0": 9,
+    "Polje_2_1": 10,
+    "Polje_2_2": 11,
+    "Polje_2_3": 12,
+    "Polje_2_4": 13,
+    "Polje_2_5": 14,
+    "Polje_2_6": 15,
+    "Polje_2_7": 16,
+    "Polje_2_8": 17,
+    "Polje_2_9": 18,
     // 3. vrsta
-    "Polje_3_0": 4,
-    "Polje_3_1": 4,
-    "Polje_3_2": 4,
-    "Polje_3_3": 4,
-    "Polje_3_4": 4,
-    "Polje_3_5": 4,
-    "Polje_3_6": 4,
-    "Polje_3_7": 4,
-    "Polje_3_8": 4,
-    "Polje_3_9": 4,
-    "Polje_3_10": 4,
+    "Polje_3_0": 19,
+    "Polje_3_1": 20,
+    "Polje_3_2": 21,
+    "Polje_3_3": 22,
+    "Polje_3_4": 23,
+    "Polje_3_5": 24,
+    "Polje_3_6": 25,
+    "Polje_3_7": 26,
+    "Polje_3_8": 27,
+    "Polje_3_9": 28,
+    "Polje_3_10": 29,
     // 4. vrsta
-    "Polje_4_0": 4,
-    "Polje_4_1": 4,
-    "Polje_4_2": 4,
-    "Polje_4_3": 4,
-    "Polje_4_4": 4,
-    "Polje_4_5": 4,
-    "Polje_4_6": 4,
-    "Polje_4_7": 4,
-    "Polje_4_8": 4,
-    "Polje_4_9": 4,
+    "Polje_4_0": 30,
+    "Polje_4_1": 31,
+    "Polje_4_2": 32,
+    "Polje_4_3": 33,
+    "Polje_4_4": 34,
+    "Polje_4_5": 35,
+    "Polje_4_6": 36,
+    "Polje_4_7": 37,
+    "Polje_4_8": 38,
+    "Polje_4_9": 39,
     // 5. vrsta
-    "Polje_5_0": 4,
-    "Polje_5_1": 4,
-    "Polje_5_2": 4,
-    "Polje_5_3": 4,
-    "Polje_5_4": 4,
-    "Polje_5_5": 4,
-    "Polje_5_6": 4,
-    "Polje_5_7": 4,
-    "Polje_5_8": 4,
-    "Polje_5_9": 4,
-    "Polje_5_10": 4,
+    "Polje_5_0": 40,
+    "Polje_5_1": 41,
+    "Polje_5_2": 42,
+    "Polje_5_3": 43,
+    "Polje_5_4": 44,
+    "Polje_5_5": 45,
+    "Polje_5_6": 46,
+    "Polje_5_7": 47,
+    "Polje_5_8": 48,
+    "Polje_5_9": 49,
+    "Polje_5_10": 50,
     // 6. vrsta
-    "Polje_6_0": 4,
-    "Polje_6_1": 4,
-    "Polje_6_2": 4,
-    "Polje_6_3": 4,
-    "Polje_6_4": 4,
-    "Polje_6_5": 4,
-    "Polje_6_6": 4,
-    "Polje_6_7": 4,
-    "Polje_6_8": 4,
-    "Polje_6_9": 4,
+    "Polje_6_1": 51,
+    "Polje_6_2": 52,
+    "Polje_6_3": 53,
+    "Polje_6_0": 54,
+    "Polje_6_4": 55,
+    "Polje_6_5": 56,
+    "Polje_6_6": 57,
+    "Polje_6_7": 58,
+    "Polje_6_8": 59,
+    "Polje_6_9": 60,
     // 7. vrsta
-    "Polje_7_0": 4,
-    "Polje_7_1": 4,
-    "Polje_7_2": 4,
-    "Polje_7_3": 4,
-    "Polje_7_4": 4,
-    "Polje_7_5": 4,
-    "Polje_7_6": 4,
-    "Polje_7_7": 4,
-    "Polje_7_8": 4,
-    "Polje_7_9": 4,
-    "Polje_7_10": 4,
+    "Polje_7_0": 61,
+    "Polje_7_1": 62,
+    "Polje_7_2": 63,
+    "Polje_7_3": 64,
+    "Polje_7_4": 65,
+    "Polje_7_5": 66,
+    "Polje_7_6": 67,
+    "Polje_7_7": 68,
+    "Polje_7_8": 69,
+    "Polje_7_9": 70,
+    "Polje_7_10": 71,
 };
 
 
@@ -220,9 +220,13 @@ const sunniePosition = sunnie.getComponentOfType(Transform).translation
 // loader.loadNode('Listavec.002').isStatic = true;
 
 
-
+let aliJePavza = false;
 
 document.addEventListener('keydown', (event) => {
+    if(gameOver || aliJePavza) {
+        return;
+    }
+
     const speed = 0.15; // Adjust the speed as needed
     const cloudTransform = oblak.getComponentOfType(Transform);
     
@@ -381,7 +385,47 @@ Object.keys(tileMaterialMap).forEach(tile => {
     i += 1
 });
 
-console.log(tabelaPobarvanihTileov);
+//console.log(tabelaPobarvanihTileov);
+
+function updateHealthBar(currentHealthPoints, maxHealthPoints) {
+    //const maxHealthPoints = 30;
+    const healthPercentage = ((maxHealthPoints - currentHealthPoints) / maxHealthPoints) * 100;
+
+    const healthBar = document.getElementById('health-bar');
+    const healthTextRight = document.getElementById('health-text-right');
+
+    healthBar.style.width = healthPercentage + '%';
+    //healthTextRight.textContent = currentHealthPoints + '/' + maxHealthPoints;
+    healthTextRight.textContent = Math.round(healthPercentage) + '%';
+
+    // Change text color based on health percentage
+    if (healthPercentage <= 45) {
+        healthTextRight.style.color = 'white';
+    } else {
+        healthTextRight.style.color = 'black';
+    }
+}
+
+function prestejPobarvaneTile() {
+    let stPobarvanih = 0;
+    for(let i = 0; i < tabelaPobarvanihTileov.length; i++) {
+        if(tabelaPobarvanihTileov[i][2] == 1) {
+            stPobarvanih++;
+        }
+    }
+    //console.log("stPobarvanih: ", stPobarvanih);
+
+    // let displayArea = document.getElementById("displayArea");
+    // displayArea.textContent = 30 - stPobarvanih;
+
+    //let health = document.getElementById("health")
+    //health.value = 30 - stPobarvanih;
+
+    //const healthPrecents = ((30-stPobarvanih) / 30) * 100;
+    updateHealthBar(stPobarvanih, 30);
+
+    return stPobarvanih;
+}
 
 // scene.traverse(node => {
 //     //console.log("Node name:", node.name)
@@ -408,15 +452,21 @@ function izberiCilj() {
 let sunnieCilj = izberiCilj();
 
 // Hranimo stevilo posusenih polj, ker ce so vsa posusena, se igra konca.
-let stPosusenihPolj = 0;
+//let stPosusenihPolj = 0;
 
-// Depth first search za premikanje soncka
-
-function depthFirstSearch() {
-
+// Pavza Play
+// let aliJePavza = false;
+document.getElementById('pauseButton').addEventListener("click", pavzaPlayFunkcija);
+document.getElementById('playButton').addEventListener("click", pavzaPlayFunkcija);
+function pavzaPlayFunkcija() {
+    //console.log("klik na pavzo");
+    aliJePavza = !aliJePavza;
 }
 
-let prejsnjaPozicijaSunnie = getNodePosition("Sunnie");
+let prejsnjaPozicijaSunnie = getNodePosition("Sunnie").map((x) => x);
+console.log(prejsnjaPozicijaSunnie)
+
+let gameOver = false;
 
 function update(time, dt) {
     scene.traverse(node => {
@@ -426,8 +476,13 @@ function update(time, dt) {
     });
 
     physics.update(time, dt);
+    //console.log(aliJePavza);
 
-    if(stPosusenihPolj < 72) {
+    let stPosusenihPolj = prestejPobarvaneTile();
+
+    if(aliJePavza) {
+
+    } else if(stPosusenihPolj < 30) {
         // Ce je Clyde nad tile-om, se spremeni texture tile-a
         const clydePosition = getNodePosition("Clyde");
         const sunniePosition = getNodePosition("Sunnie");
@@ -436,13 +491,17 @@ function update(time, dt) {
         Object.keys(tileTimersClyde).forEach(tile => {
             //console.log("tile: ", tile);
             const tilePosition = getNodePosition(tile);
+            //pridobi indeks tile-a
+            let ix = tileMaterialMap[tile];
+            //console.log("indeks tilea: ", ix);
             //console.log("NodeName: ", getNodeByName(tile))
             
             if (isClydeAboveTile(clydePosition, tilePosition)) {
                 tileTimersClyde[tile] += dt;
                 if (tileTimersClyde[tile] >= 0.1) {
                     changeTileTexture(tile, "clyde" /* newTextureIndex */);
-                    stPosusenihPolj -= 1;
+                    //stPosusenihPolj -= 1;
+                    tabelaPobarvanihTileov[ix][2] = 0;
                     tileTimersClyde[tile] = 0; // Reset the timer
                 }
             } else {
@@ -454,7 +513,8 @@ function update(time, dt) {
                 tileTimersSunnie[tile] += dt;
                 if (tileTimersSunnie[tile] >= 0.1) {
                     changeTileTexture(tile, "sunnie" /* newTextureIndex */);
-                    stPosusenihPolj += 1;
+                    //stPosusenihPolj += 1;
+                    tabelaPobarvanihTileov[ix][2] = 1;
                     tileTimersSunnie[tile] = 0; // Reset the timer
                 }
             } else {
@@ -463,7 +523,7 @@ function update(time, dt) {
         });
 
         // Premikanje sonca
-        const speedSunnie = 0.2;
+        const speedSunnie = 0.08;
         const x_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][0];
         const y_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][1];      
 
@@ -485,17 +545,25 @@ function update(time, dt) {
             aliSeJePremaknil = true;
         }
 
-        console.log("Sunnie position: ", sunniePosition);
-        console.log("Prejsnji position: ", prejsnjaPozicijaSunnie);
+        //console.log("speed: ", speedSunnie);
+
+        //console.log("Sunnie position: ", sunniePosition);
+        //console.log("Prejsnji position: ", prejsnjaPozicijaSunnie);
 
         //let sunniePos = getNodePosition('Sunnie');
-        if((aliSeJePremaknil == false) || (prejsnjaPozicijaSunnie == sunniePosition)) {
+        if((aliSeJePremaknil == false) ||
+            ((prejsnjaPozicijaSunnie[0] <= sunniePosition[0] + 0.01) && (prejsnjaPozicijaSunnie[0] >= sunniePosition[0] - 0.01)) &&
+            ((prejsnjaPozicijaSunnie[2] <= sunniePosition[2] + 0.01) && (prejsnjaPozicijaSunnie[2] >= sunniePosition[2] - 0.01))) {
+            
+            //console.log("tukaj notr");
             sunnieCilj = izberiCilj();
         }
+        //console.log("Sunnie cilj: ",sunnieCilj);
 
-        prejsnjaPozicijaSunnie = sunniePosition;
+        prejsnjaPozicijaSunnie = sunniePosition.map((x) => x);
 
     } else {
+        gameOver = true;
         console.log("GAME OVER!")
     }
     

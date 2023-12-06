@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Home Screen</title>
+    <link rel="stylesheet" href="homePageStyle2.css">
+</head>
+<body>
+    <div class="background">
+        <img src="homePageImage.png" alt="Background" class="background-image">
+        <div class="overlay">
+            <button class="play-button" type="button" onclick="startGame()">PLAY</button>
+            <button class="instructions-button" type="button">instructions</button>
+        </div>
+    </div>
+    <script>
+        function startGame() {
+            alert("Button clicked!");
+            window.location.href = 'index.html'; // Redirect to index.html
+        }
+    </script>
+</body>
+</html>
