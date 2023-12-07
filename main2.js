@@ -42,7 +42,7 @@ const renderer = new Renderer(canvas); //TT
 await renderer.initialize();
 
 const loader = new GLTFLoader();
-await loader.load('scena3.gltf');
+await loader.load('scena4.gltf');
 
 const rjavaMaterial = loader.loadMaterial(0);
 const zelenaMaterial = loader.loadMaterial(7); //4 ta je najbrz prava
