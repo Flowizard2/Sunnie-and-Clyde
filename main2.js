@@ -36,6 +36,9 @@ import { Light } from './Light.js';
 //     });
 // }
 
+var itemBadPickUp = new Audio("./Sounds/itemBadpickUp.mp3");
+var itemGoodPickUp = new Audio("./Sounds/itemGoodPickUp.mp3");
+
 const canvas = document.querySelector('canvas');
 //TT const renderer = new UnlitRenderer(canvas);
 const renderer = new Renderer(canvas); //TT
@@ -46,6 +49,10 @@ await loader.load('scena4.gltf');
 
 const rjavaMaterial = loader.loadMaterial(0);
 const zelenaMaterial = loader.loadMaterial(7); //4 ta je najbrz prava
+const modraMaterial = loader.loadMaterial(15);
+const rdecaMaterial = loader.loadMaterial(16);
+
+let clydeSpeed = 0.15; // Adjust the clydeSpeed as needed
 
 // Map of tile names to their material indices
 const tileMaterialMap = {
@@ -136,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function(){
         window.location.href = "index.html";
         return false;
     });
-  });
+});
 
 
 //console.log("Default Scene: ", loader.defaultScene);
@@ -182,9 +189,57 @@ light.addComponent(new Light({
 }));
 scene.addChild(light);
 
-// CREATE A CAMERA THAT REPRESENTS THE LIGHTs POINT OF VIEW
+let bucket = null;
+let ogenj = null;
+let ogenj1 = null;
+let ogenj2 = null;
+let stopwatch = null;
+let stopwatch1 = null;
+let stopwatch2 = null;
+let healthpack = null;
 
-// Loopamo cez vse node-e in jih nastavimo, da so STATIC
+//SKRIJEMO POWER-UPe
+scene.traverse(node => {
+    if(node.name == "BucketOfWater" ||
+       node.name == "Ogenj" ||
+       node.name == "Ogenj.001" ||
+       node.name == "Ogenj.002" ||
+       node.name == "Stopwatch" ||
+       node.name == "Stopwatch.001" ||
+       node.name == "Stopwatch.002" || 
+       node.name == "Healthpack") {
+        node.getComponentOfType(Transform).translation[0] = 200;
+    }
+
+    if(node.name == "BucketOfWater") {
+        bucket = node;
+    } else if(node.name == "Ogenj") {
+        ogenj = node;
+    } else if(node.name == "Ogenj.001") {
+        ogenj1 = node;
+    } else if(node.name == "Ogenj.002") {
+        ogenj2 = node;
+    } else if(node.name == "Stopwatch") {
+        stopwatch = node;
+    } else if(node.name == "Stopwatch.001") {
+        stopwatch1 = node;
+    } else if(node.name == "Stopwatch.002") {
+        stopwatch2 = node;
+    } else if(node.name == "Healthpack") {
+        healthpack = node;
+    }
+});
+
+function ponastavi_mesta_powerupov() {
+    bucket.getComponentOfType(Transform).translation[0] = 200;
+    ogenj.getComponentOfType(Transform).translation[0] = 200;
+    ogenj1.getComponentOfType(Transform).translation[0] = 200;
+    ogenj2.getComponentOfType(Transform).translation[0] = 200;
+    stopwatch.getComponentOfType(Transform).translation[0] = 200;
+    stopwatch1.getComponentOfType(Transform).translation[0] = 200;
+    stopwatch2.getComponentOfType(Transform).translation[0] = 200;
+    healthpack.getComponentOfType(Transform).translation[0] = 200;
+}
 
 
 const oblak = loader.loadNode('Clyde');
@@ -235,21 +290,20 @@ document.addEventListener('keydown', (event) => {
         return;
     }
 
-    const speed = 0.15; // Adjust the speed as needed
     const cloudTransform = oblak.getComponentOfType(Transform);
     
     switch (event.key) {
         case 'ArrowUp':
-            cloudPosition[2] -= speed;
+            cloudPosition[2] -= clydeSpeed;
             break;
         case 'ArrowDown':
-            cloudPosition[2] += speed;
+            cloudPosition[2] += clydeSpeed;
             break;
         case 'ArrowLeft':
-            cloudPosition[0] -= speed;
+            cloudPosition[0] -= clydeSpeed;
             break;
         case 'ArrowRight':
-            cloudPosition[0] += speed;
+            cloudPosition[0] += clydeSpeed;
             break;
     }
 
@@ -265,7 +319,7 @@ scene.traverse(node => {
     if (!model) {
         return;
     }
-
+    
     //console.log("tukaj!");
     const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
     //console.log("Boxes: ", boxes);
@@ -309,6 +363,15 @@ function getNodePosition(nodeName) {
 }
 
 
+let indeks_postavitve_0 = 0;
+let indeks_postavitve_1 = 0;
+let indeks_postavitve_2 = 0;
+
+// Powerup booleans
+let bucket_bool = false;
+let ogenj_bool = false;
+let stopwatch_bool = false;
+let healthpack_bool = false;
 
 
 // Timers for each tile for Clyde
@@ -325,10 +388,6 @@ function isClydeAboveTile(clydePosition, tilePosition, thresholdX = 0.8, thresho
     // Check if Clyde is within a certain distance (threshold) in the 'x' and 'y' axes
     const distanceX = Math.abs(clydePosition[0] - tilePosition[0]);
     const distanceY = Math.abs(clydePosition[2] - tilePosition[2]);
-    // console.log("Tile Position: ", tilePosition[0], tilePosition[1], tilePosition[2]);
-    // console.log("Clyde Position: ", clydePosition[0], clydePosition[1]);
-    // console.log("distanceX: ", distanceX);
-    // console.log("distanceY: ", distanceY);
 
     return distanceX <= thresholdX && distanceY <= thresholdY;
 }
@@ -359,6 +418,10 @@ function changeTileTexture(tileName, character) {
         tileModel.primitives[0].addMaterial(rjavaMaterial);
     } else if (character == "clyde") {
         tileModel.primitives[0].addMaterial(zelenaMaterial);
+    } else if(character == "bucket") {
+        tileModel.primitives[0].addMaterial(modraMaterial);
+    } else if(character == "ogenj") {
+        tileModel.primitives[0].addMaterial(rdecaMaterial);
     }
     
 
@@ -375,6 +438,140 @@ function changeTileTexture(tileName, character) {
     // });
 }
 
+let maxHealthPoints = 50;
+
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+}
+
+function spremeniRdecaModraPolja() {
+
+    for(let i = 0; i < tabelaPobarvanihTileov.length; i++) {
+
+        if(tabelaPobarvanihTileov[i][2] == 2) {
+            let tileIme = getKeyByValue(tileMaterialMap, i);
+            changeTileTexture(tileIme, 'clyde');
+            tabelaPobarvanihTileov[i][2] = 0;
+
+        } else if(tabelaPobarvanihTileov[i][2] == 3) {
+            let tileIme = getKeyByValue(tileMaterialMap, i);
+            changeTileTexture(tileIme, 'sunnie');
+            tabelaPobarvanihTileov[i][2] = 1;
+        }
+    }
+}
+
+function bucketOgenjEffect(tileName, effect) {
+    let tile = getNodeByName(tileName);
+    //console.log(tile);
+    let effect_position = tile.getComponentOfType(Transform).translation;
+
+    Object.keys(tileTimersClyde).forEach(node => {
+        const node_position = getNodePosition(node);
+        //console.log(node);
+        //if(typeof node.getComponentOfType(Transform) !== 'undefined') {
+        //console.log("TA DA!");
+        //let node_position = node.getComponentOfType(Transform).translation;
+        let indeks_nodea = tileMaterialMap[node];
+      //  console.log("indeks: ", indeks_nodea);  // DEBUG
+
+        if(node_position[0] >= (effect_position[0] - 3) && node_position[0] <= (effect_position[0] + 3) &&
+        node_position[2] >= (effect_position[2] - 3) && node_position[2] <= (effect_position[2] + 3)) {
+            if(effect == 'bucket') {
+                //console.log("bucket notri");
+                tabelaPobarvanihTileov[indeks_nodea][2] = 2;
+                changeTileTexture(node, 'bucket');                
+
+            } else if(effect == 'ogenj') {
+                //console.log("ogenj notri");
+                tabelaPobarvanihTileov[indeks_nodea][2] = 3;
+                changeTileTexture(node, 'ogenj');
+
+            }
+        }
+        //}
+        
+    });
+}
+
+function prestejRjaveTile() {
+    let stRjavih = 0;
+    for(let i = 0; i < tabelaPobarvanihTileov.length; i++) {
+        if(tabelaPobarvanihTileov[i][2] == 1) {
+            stRjavih++;
+        }
+    }
+
+    return stRjavih;
+}
+
+function healthpackEffect() {
+    let stRjavihTileov = prestejRjaveTile();
+
+    let stOdpobarvaj = Math.min(stRjavihTileov, 6);
+
+    for(let i = 0; i < stOdpobarvaj; i++) {
+        let indeks = Math.floor(Math.random() * 72);
+
+        while(tabelaPobarvanihTileov[indeks][2] != 1) {
+            console.log("while healthpackEffect");
+            indeks = Math.floor(Math.random() * 72);
+        }
+
+        let tileName = getKeyByValue(tileMaterialMap, indeks);
+        //console.log(tileName);
+        changeTileTexture(tileName, 'clyde');
+        tabelaPobarvanihTileov[indeks][2] = 0;
+    }
+}
+
+function aktivirajPowerUp(tile) {
+    // Check if Clyde is on Powerup
+    
+    if(bucket_bool || healthpack_bool) {
+        // console.log("tileMaterialMapIX: ", tileMaterialMap[tile]);
+        // console.log("indeks postavitve: ", indeks_postavitve_0);
+        if(tileMaterialMap[tile] == indeks_postavitve_0) {
+            
+            //console.log("pobrali bucket/healthpack.")
+            itemGoodPickUp.play();
+            ponastavi_mesta_powerupov();
+            if(bucket_bool) {
+                //console.log("Naj bi bil tile name: ", tile);
+                bucketOgenjEffect(tile, 'bucket');
+                bucket_bool = false;
+
+            } else if(healthpack_bool) {
+                healthpackEffect();
+                healthpack_bool = false;
+
+            }
+        }
+
+    } else if(ogenj_bool || stopwatch_bool) {
+        let ix = tileMaterialMap[tile];
+        // console.log("ixOgenjStopwatch: ", ix);
+        // console.log("indeksi postavitev: ", indeks_postavitve_0, indeks_postavitve_1, indeks_postavitve_2);
+        if(ix == indeks_postavitve_0 || ix == indeks_postavitve_1 || ix == indeks_postavitve_2) {
+            itemBadPickUp.play();
+            ponastavi_mesta_powerupov();
+            //console.log("pobrali ogenj/stopwatch.");
+            if(ogenj_bool) {
+                bucketOgenjEffect(tile, 'ogenj');
+                ogenj_bool = false;
+
+            } else if(stopwatch_bool) {
+                clydeSpeed = 0.035;
+                stopwatch_bool = false;
+
+            }
+        }
+
+    }
+}
+
+
+
 
 // Tabela tile-ov za sonce
 const rows = 72;
@@ -388,14 +585,14 @@ Object.keys(tileMaterialMap).forEach(tile => {
     tabelaPobarvanihTileov[i][0] = tilePosition[0];
     // y koordinata
     tabelaPobarvanihTileov[i][1] = tilePosition[2];
-    // ali je tile posusen (1 => posusen; 0 => ni posusen)
+    // ali je tile posusen (1 => posusen; 0 => ni posusen; 2 => voda; 3 => ogenj)
     tabelaPobarvanihTileov[i][2] = 0.0;
     i += 1
 });
 
 //console.log(tabelaPobarvanihTileov);
 
-function updateHealthBar(currentHealthPoints, maxHealthPoints) {
+function updateHealthBar(currentHealthPoints) {
     //const maxHealthPoints = 30;
     const healthPercentage = ((maxHealthPoints - currentHealthPoints) / maxHealthPoints) * 100;
 
@@ -412,12 +609,14 @@ function updateHealthBar(currentHealthPoints, maxHealthPoints) {
     } else {
         healthTextRight.style.color = 'black';
     }
+
+    return healthPercentage;
 }
 
 function prestejPobarvaneTile() {
     let stPobarvanih = 0;
     for(let i = 0; i < tabelaPobarvanihTileov.length; i++) {
-        if(tabelaPobarvanihTileov[i][2] == 1) {
+        if(tabelaPobarvanihTileov[i][2] == 3 || tabelaPobarvanihTileov[i][2] == 1) {
             stPobarvanih++;
         }
     }
@@ -430,7 +629,7 @@ function prestejPobarvaneTile() {
     //health.value = 30 - stPobarvanih;
 
     //const healthPrecents = ((30-stPobarvanih) / 30) * 100;
-    updateHealthBar(stPobarvanih, 30);
+    //updateHealthBar(stPobarvanih);
 
     return stPobarvanih;
 }
@@ -451,6 +650,7 @@ function izberiCilj() {
 
     // Ce je ta tile ze posusen, izberemo novega.
     while(tabelaPobarvanihTileov[indeks_izbranega_tilea][2] == 1) {
+        console.log("while izberiCilj");
         indeks_izbranega_tilea = Math.floor(Math.random() * 72);
     }
 
@@ -481,8 +681,11 @@ let prejsnjaPozicijaSunnie = getNodePosition("Sunnie").map((x) => x);
 console.log(prejsnjaPozicijaSunnie)
 
 let gameOver = false;
+let vsotaDt = 0;
 
 function update(time, dt) {
+    //console.log("Time: ", time);
+    //console.log("dt: ", dt);
     scene.traverse(node => {
         for (const component of node.components) {
             component.update?.(time, dt);
@@ -493,10 +696,91 @@ function update(time, dt) {
     //console.log(aliJePavza);
 
     let stPosusenihPolj = prestejPobarvaneTile();
+    let healthPercentage = updateHealthBar(stPosusenihPolj);
 
     if(aliJePavza) {
 
-    } else if(stPosusenihPolj < 30) {
+    } else if(healthPercentage > 0) {
+
+        if(time > 5) {
+            vsotaDt += dt;
+
+            if(vsotaDt > 8) {
+                bucket_bool = false;
+                ogenj_bool = false;
+                stopwatch_bool = false;
+                healthpack_bool = false;
+                ponastavi_mesta_powerupov();
+            }
+
+            if(vsotaDt > 10) {
+                console.log("10 sek je minilo.");
+                clydeSpeed = 0.15;
+                spremeniRdecaModraPolja();
+                // Izberemo random stevilo od 0 do 3
+                let st_powerup = Math.floor(Math.random() * 4);
+                //st_powerup = 0;
+                if(st_powerup == 0) {   // Bucket
+                    bucket_bool = true;
+                    indeks_postavitve_0 = Math.floor(Math.random() * 72);
+                    bucket.getComponentOfType(Transform).translation[0] = tabelaPobarvanihTileov[indeks_postavitve_0][0];
+                    bucket.getComponentOfType(Transform).translation[2] = tabelaPobarvanihTileov[indeks_postavitve_0][1];
+
+                } else if(st_powerup == 1) {    // Healthpack
+                    healthpack_bool = true;
+                    indeks_postavitve_0 = Math.floor(Math.random() * 72);
+                    healthpack.getComponentOfType(Transform).translation[0] = tabelaPobarvanihTileov[indeks_postavitve_0][0];
+                    healthpack.getComponentOfType(Transform).translation[2] = tabelaPobarvanihTileov[indeks_postavitve_0][1];
+
+                } else if(st_powerup == 2) {    // Ogenj
+                    ogenj_bool = true;
+                    indeks_postavitve_0 = Math.floor(Math.random() * 72);
+                    indeks_postavitve_1 = Math.floor(Math.random() * 72);
+                    indeks_postavitve_2 = Math.floor(Math.random() * 72);
+
+                    while(indeks_postavitve_1 == indeks_postavitve_0) {
+                        indeks_postavitve_1 = Math.floor(Math.random() * 72);
+                    }
+                    while(indeks_postavitve_2 == indeks_postavitve_0 || indeks_postavitve_2 == indeks_postavitve_1) {
+                        indeks_postavitve_2 = Math.floor(Math.random() * 72);
+                    }
+
+                    ogenj.getComponentOfType(Transform).translation[0] = tabelaPobarvanihTileov[indeks_postavitve_0][0];
+                    ogenj.getComponentOfType(Transform).translation[2] = tabelaPobarvanihTileov[indeks_postavitve_0][1];
+
+                    ogenj1.getComponentOfType(Transform).translation[0] = tabelaPobarvanihTileov[indeks_postavitve_1][0];
+                    ogenj1.getComponentOfType(Transform).translation[2] = tabelaPobarvanihTileov[indeks_postavitve_1][1];
+
+                    ogenj2.getComponentOfType(Transform).translation[0] = tabelaPobarvanihTileov[indeks_postavitve_2][0];
+                    ogenj2.getComponentOfType(Transform).translation[2] = tabelaPobarvanihTileov[indeks_postavitve_2][1];
+
+                } else if(st_powerup == 3) {    // Stopwatch
+                    stopwatch_bool = true;
+                    indeks_postavitve_0 = Math.floor(Math.random() * 72);
+                    indeks_postavitve_1 = Math.floor(Math.random() * 72);
+                    indeks_postavitve_2 = Math.floor(Math.random() * 72);
+
+                    while(indeks_postavitve_1 == indeks_postavitve_0) {
+                        indeks_postavitve_1 = Math.floor(Math.random() * 72);
+                    }
+                    while(indeks_postavitve_2 == indeks_postavitve_0 || indeks_postavitve_2 == indeks_postavitve_1) {
+                        indeks_postavitve_2 = Math.floor(Math.random() * 72);
+                    }
+
+                    stopwatch.getComponentOfType(Transform).translation[0] = tabelaPobarvanihTileov[indeks_postavitve_0][0];
+                    stopwatch.getComponentOfType(Transform).translation[2] = tabelaPobarvanihTileov[indeks_postavitve_0][1];
+
+                    stopwatch1.getComponentOfType(Transform).translation[0] = tabelaPobarvanihTileov[indeks_postavitve_1][0];
+                    stopwatch1.getComponentOfType(Transform).translation[2] = tabelaPobarvanihTileov[indeks_postavitve_1][1];
+
+                    stopwatch2.getComponentOfType(Transform).translation[0] = tabelaPobarvanihTileov[indeks_postavitve_2][0];
+                    stopwatch2.getComponentOfType(Transform).translation[2] = tabelaPobarvanihTileov[indeks_postavitve_2][1];
+
+                }
+
+                vsotaDt = 0;
+            }
+        }
         // Ce je Clyde nad tile-om, se spremeni texture tile-a
         const clydePosition = getNodePosition("Clyde");
         const sunniePosition = getNodePosition("Sunnie");
@@ -512,12 +796,13 @@ function update(time, dt) {
             
             if (isClydeAboveTile(clydePosition, tilePosition)) {
                 tileTimersClyde[tile] += dt;
-                if (tileTimersClyde[tile] >= 0.1) {
+                if (tileTimersClyde[tile] >= 0.1 && tabelaPobarvanihTileov[ix][2] != 2 && tabelaPobarvanihTileov[ix][2] != 3) {
                     changeTileTexture(tile, "clyde" /* newTextureIndex */);
                     //stPosusenihPolj -= 1;
                     tabelaPobarvanihTileov[ix][2] = 0;
                     tileTimersClyde[tile] = 0; // Reset the timer
                 }
+                aktivirajPowerUp(tile);
             } else {
                 tileTimersClyde[tile] = 0; // Reset if Clyde moves away
             }
@@ -525,7 +810,7 @@ function update(time, dt) {
             // if (isSunnieAboveTile(sunniePosition, tabelaPobarvanihTileov[sunnieCilj][0], tabelaPobarvanihTileov[sunnieCilj][1])) {
             if (isSunnieAboveTile(sunniePosition, tilePosition)) {
                 tileTimersSunnie[tile] += dt;
-                if (tileTimersSunnie[tile] >= 0.1) {
+                if (tileTimersSunnie[tile] >= 0.1 && tabelaPobarvanihTileov[ix][2] != 2 && tabelaPobarvanihTileov[ix][2] != 3) {
                     changeTileTexture(tile, "sunnie" /* newTextureIndex */);
                     //stPosusenihPolj += 1;
                     tabelaPobarvanihTileov[ix][2] = 1;

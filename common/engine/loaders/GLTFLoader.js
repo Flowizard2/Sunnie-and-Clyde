@@ -439,7 +439,18 @@ export class GLTFLoader {
         node.addComponent(new Transform(gltfSpec));
 
         node.addName(gltfSpec.name);    // SPREMEMBA
-        node.isStatic = true;    // SPREMEMBA
+        
+        // SPREMEMBA
+        if(node.name != "BucketOfWater" &&
+           node.name != "Ogenj" &&
+           node.name != "Ogenj.001" &&
+           node.name != "Ogenj.002" &&
+           node.name != "Stopwatch" &&
+           node.name != "Stopwatch.001" &&
+           node.name != "Stopwatch.002" && 
+           node.name != "Healthpack") {
+           node.isStatic = true;    // SPREMEMBA
+        }
 
         if (gltfSpec.children) {
             for (const childIndex of gltfSpec.children) {
