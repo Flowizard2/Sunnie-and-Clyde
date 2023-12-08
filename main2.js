@@ -27,14 +27,14 @@ import { Physics } from './Physics.js';
 import { Renderer } from './Renderer.js';
 import { Light } from './Light.js';
 
-// window.onload = function() {
-//     var audioElement = document.getElementById("pesem");
+window.onload = function() {
+    var audioElement = document.getElementById("pesem");
     
-//     // Play audio, but be prepared for it to be blocked due to browser's autoplay policy
-//     audioElement.play().catch(function(error) {
-//         console.error("Playback was prevented:", error);
-//     });
-// }
+    // Play audio, but be prepared for it to be blocked due to browser's autoplay policy
+    audioElement.play().catch(function(error) {
+        console.error("Playback was prevented:", error);
+    });
+}
 
 var itemBadPickUp = new Audio("./Sounds/itemBadpickUp2.mp3");
 var itemGoodPickUp = new Audio("./Sounds/itemGoodPickUp.mp3");
@@ -514,7 +514,7 @@ function healthpackEffect() {
         let indeks = Math.floor(Math.random() * 72);
 
         while(tabelaPobarvanihTileov[indeks][2] != 1) {
-            console.log("while healthpackEffect");
+            //console.log("while healthpackEffect");
             indeks = Math.floor(Math.random() * 72);
         }
 
@@ -595,7 +595,7 @@ let collisionKazen = 0;
 
 function updateHealthBar(currentHealthPoints) {
     //const maxHealthPoints = 30;
-    const healthPercentage = ((maxHealthPoints - currentHealthPoints - collisionKazen) / maxHealthPoints) * 100;
+    let healthPercentage = ((maxHealthPoints - currentHealthPoints - collisionKazen) / maxHealthPoints) * 100;
 
     const healthBar = document.getElementById('health-bar');
     const healthTextRight = document.getElementById('health-text-right');
@@ -652,7 +652,7 @@ function izberiCilj() {
 
     // Ce je ta tile ze posusen, izberemo novega.
     while(tabelaPobarvanihTileov[indeks_izbranega_tilea][2] == 1) {
-        console.log("while izberiCilj");
+        //console.log("while izberiCilj");
         indeks_izbranega_tilea = Math.floor(Math.random() * 72);
     }
 
@@ -719,7 +719,7 @@ let prejsnjiClydeSunnieCollision = false;
 
 
 function update(time, dt) {
-    console.log("Cilj: ", sunnieCilj);
+    //console.log("Cilj: ", sunnieCilj);
     //console.log("Time: ", time);
     //console.log("dt: ", dt);
     scene.traverse(node => {
@@ -928,7 +928,7 @@ function update(time, dt) {
         //     window.location.href = 'home2.html';
         // });
 
-        console.log("GAME OVER!")
+        //console.log("GAME OVER!")
     }
     
 
