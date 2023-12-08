@@ -561,7 +561,7 @@ function aktivirajPowerUp(tile) {
                 ogenj_bool = false;
 
             } else if(stopwatch_bool) {
-                clydeSpeed = 0.065;
+                clydeSpeed = 0.05;
                 stopwatch_bool = false;
 
             }
