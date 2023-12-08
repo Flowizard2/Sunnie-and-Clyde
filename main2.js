@@ -561,7 +561,7 @@ function aktivirajPowerUp(tile) {
                 ogenj_bool = false;
 
             } else if(stopwatch_bool) {
-                clydeSpeed = 0.035;
+                clydeSpeed = 0.09;
                 stopwatch_bool = false;
 
             }
@@ -748,7 +748,7 @@ function update(time, dt) {
             }
 
             if(vsotaDt > 10) {
-                console.log("10 sek je minilo.");
+                //console.log("10 sek je minilo.");
                 clydeSpeed = 0.15;
                 spremeniRdecaModraPolja();
                 // Izberemo random stevilo od 0 do 3
@@ -857,7 +857,7 @@ function update(time, dt) {
 
         if(clydeSunnieCollision(clydePosition, sunniePosition)) {
             if(!prejsnjiClydeSunnieCollision) { // Ce se je zgodil nov collision, odbijemo tocke.
-                collisionKazen += 3;
+                collisionKazen += 2;
                 spremeniBarvoHealthbara('rdeca');
             }
 
@@ -868,7 +868,7 @@ function update(time, dt) {
         }
 
         // Premikanje sonca
-        let speedSunnie = 4 * dt;
+        let speedSunnie = 3 * dt;
         const x_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][0];
         const y_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][1];      
 
