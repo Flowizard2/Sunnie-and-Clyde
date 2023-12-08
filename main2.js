@@ -610,7 +610,7 @@ function updateHealthBar(currentHealthPoints) {
         healthTextRight.style.color = 'black';
     }
 
-    return healthPercentage;
+    return Math.max(healthPercentage, 0);
 }
 
 function prestejPobarvaneTile() {
