@@ -81,7 +81,8 @@ body, html {
 .play-button:hover, .play-button:focus, .instructions-button:hover, .instructions-button:focus {
     cursor: pointer;
     background-color: #0056b3; /* Slightly darker shade for hover effect */
-    box-shadow: 0 2px #003875; /* Adjust shadow for pressed effect */
+    box-shadow: 0 2px #003875, /* Adjust shadow for pressed effect */
+                0px 2px 40px rgba(255, 255, 255, 0.9);
     transform: translateY(2px); /* Move button down to mimic pressing */
 }
 

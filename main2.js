@@ -36,7 +36,7 @@ import { Light } from './Light.js';
 //     });
 // }
 
-var itemBadPickUp = new Audio("./Sounds/itemBadpickUp.mp3");
+var itemBadPickUp = new Audio("./Sounds/itemBadpickUp2.mp3");
 var itemGoodPickUp = new Audio("./Sounds/itemGoodPickUp.mp3");
 
 const canvas = document.querySelector('canvas');
@@ -594,7 +594,7 @@ Object.keys(tileMaterialMap).forEach(tile => {
 
 function updateHealthBar(currentHealthPoints) {
     //const maxHealthPoints = 30;
-    const healthPercentage = ((maxHealthPoints - currentHealthPoints) / maxHealthPoints) * 100;
+    const healthPercentage = ((maxHealthPoints - currentHealthPoints - collisionKazen) / maxHealthPoints) * 100;
 
     const healthBar = document.getElementById('health-bar');
     const healthTextRight = document.getElementById('health-text-right');
@@ -657,6 +657,33 @@ function izberiCilj() {
     return indeks_izbranega_tilea;
 }
 
+function clydeSunnieCollision(clydePosition, sunniePosition) {
+    const distanceX = Math.abs(sunniePosition[0] - clydePosition[0]);
+    const distanceY = Math.abs(sunniePosition[2] - clydePosition[2]);
+
+    return distanceX <= 1 && distanceY <= 1;
+}
+
+function spremeniBarvoHealthbara(nacin) {
+    let healthBarContainer = document.getElementById('health-bar-container');
+    let healthBar = document.getElementById('health-bar');
+   
+    if(nacin === 'rdeca') { // Spremeni v rdeco
+        healthBarContainer.style.backgroundColor = '#b10f0f';
+        healthBarContainer.style.border = '2px solid #820606';
+        healthBarContainer.style.boxShadow = '0 4px #820606, 0px 0px 50px rgba(177, 15, 15, 0.9)';
+
+        healthBar.style.backgroundColor = '#dc382d'//'#ff4b4b';
+
+    } else if(nacin === 'zelena') { // Spremeni nazaj v zeleno-rjavo
+        healthBarContainer.style.backgroundColor = '#ae4119';
+        healthBarContainer.style.border = '2px solid #64260f';
+        healthBarContainer.style.boxShadow = '0 4px #64260f, 5px 8px 8px rgba(0, 0, 0, 0.5)';
+
+        healthBar.style.backgroundColor = '#92d03d';
+    }   
+}
+
 let sunnieCilj = izberiCilj();
 
 // Hranimo stevilo posusenih polj, ker ce so vsa posusena, se igra konca.
@@ -686,7 +713,11 @@ let vsotaDt = 0;
 let gameOverTime = false;
 let casIgranja = 0.0;
 
+let prejsnjiClydeSunnieCollision = false;
+let collisionKazen = 0;
+
 function update(time, dt) {
+    console.log("Cilj: ", sunnieCilj);
     //console.log("Time: ", time);
     //console.log("dt: ", dt);
     scene.traverse(node => {
@@ -824,8 +855,20 @@ function update(time, dt) {
             }
         });
 
+        if(clydeSunnieCollision(clydePosition, sunniePosition)) {
+            if(!prejsnjiClydeSunnieCollision) { // Ce se je zgodil nov collision, odbijemo tocke.
+                collisionKazen += 3;
+                spremeniBarvoHealthbara('rdeca');
+            }
+
+            prejsnjiClydeSunnieCollision = true;
+        } else {
+            prejsnjiClydeSunnieCollision = false;
+            spremeniBarvoHealthbara('zelena');
+        }
+
         // Premikanje sonca
-        const speedSunnie = 3 * dt;
+        let speedSunnie = 4 * dt;
         const x_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][0];
         const y_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][1];      
 
@@ -854,8 +897,8 @@ function update(time, dt) {
 
         //let sunniePos = getNodePosition('Sunnie');
         if((aliSeJePremaknil == false) ||
-            ((prejsnjaPozicijaSunnie[0] <= sunniePosition[0] + 0.01) && (prejsnjaPozicijaSunnie[0] >= sunniePosition[0] - 0.01)) &&
-            ((prejsnjaPozicijaSunnie[2] <= sunniePosition[2] + 0.01) && (prejsnjaPozicijaSunnie[2] >= sunniePosition[2] - 0.01))) {
+            ((prejsnjaPozicijaSunnie[0] <= sunniePosition[0] + (speedSunnie - 0.001)) && (prejsnjaPozicijaSunnie[0] >= sunniePosition[0] - (speedSunnie - 0.001))) &&
+            ((prejsnjaPozicijaSunnie[2] <= sunniePosition[2] + (speedSunnie - 0.001)) && (prejsnjaPozicijaSunnie[2] >= sunniePosition[2] - (speedSunnie - 0.001)))) {
             
             //console.log("tukaj notr");
             sunnieCilj = izberiCilj();
