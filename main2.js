@@ -591,6 +591,7 @@ Object.keys(tileMaterialMap).forEach(tile => {
 });
 
 //console.log(tabelaPobarvanihTileov);
+let collisionKazen = 0;
 
 function updateHealthBar(currentHealthPoints) {
     //const maxHealthPoints = 30;
@@ -601,6 +602,7 @@ function updateHealthBar(currentHealthPoints) {
 
     healthBar.style.width = healthPercentage + '%';
     //healthTextRight.textContent = currentHealthPoints + '/' + maxHealthPoints;
+    healthPercentage = Math.max(healthPercentage, 0);
     healthTextRight.textContent = Math.round(healthPercentage) + '%';
 
     // Change text color based on health percentage
@@ -610,7 +612,7 @@ function updateHealthBar(currentHealthPoints) {
         healthTextRight.style.color = 'black';
     }
 
-    return Math.max(healthPercentage, 0);
+    return healthPercentage;
 }
 
 function prestejPobarvaneTile() {
@@ -714,7 +716,7 @@ let gameOverTime = false;
 let casIgranja = 0.0;
 
 let prejsnjiClydeSunnieCollision = false;
-let collisionKazen = 0;
+
 
 function update(time, dt) {
     console.log("Cilj: ", sunnieCilj);
