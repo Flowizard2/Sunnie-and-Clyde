@@ -52,7 +52,7 @@ const zelenaMaterial = loader.loadMaterial(7); //4 ta je najbrz prava
 const modraMaterial = loader.loadMaterial(15);
 const rdecaMaterial = loader.loadMaterial(16);
 
-let clydeSpeed = 0.15; // Adjust the clydeSpeed as needed
+let clydeSpeed = 0.22; // Adjust the clydeSpeed as needed
 
 // Map of tile names to their material indices
 const tileMaterialMap = {
@@ -683,6 +683,9 @@ console.log(prejsnjaPozicijaSunnie)
 let gameOver = false;
 let vsotaDt = 0;
 
+let gameOverTime = false;
+let casIgranja = 0.0;
+
 function update(time, dt) {
     //console.log("Time: ", time);
     //console.log("dt: ", dt);
@@ -822,7 +825,7 @@ function update(time, dt) {
         });
 
         // Premikanje sonca
-        const speedSunnie = 0.08;
+        const speedSunnie = 3 * dt;
         const x_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][0];
         const y_coor_cilj = tabelaPobarvanihTileov[sunnieCilj][1];      
 
@@ -863,6 +866,23 @@ function update(time, dt) {
 
     } else {
         gameOver = true;
+        
+        if(!gameOverTime) {
+            casIgranja = time;
+            gameOverTime = true;
+        }
+
+        document.getElementById('timeDisplay').innerText = Math.round(casIgranja * 100) / 100; // Update time
+        document.getElementById('gameOverModal').style.display = 'block'; // Show modal
+
+        document.getElementById('replayButton').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('homepageButton').addEventListener('click', function() {
+            window.location.href = 'home2.html';
+        });
+
         console.log("GAME OVER!")
     }
     

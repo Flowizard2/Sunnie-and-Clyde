@@ -13,7 +13,9 @@ export class Physics {
             if (node.isDynamic) {
                 this.scene.traverse(other => {
                     if (node !== other && other.isStatic) {
-                        this.resolveCollision(node, other);
+                        if(!(node.name == 'Clyde' && other.name == 'Sunnie') &&  !(node.name == 'Sunnie' && other.name == 'Clyde')) {
+                            this.resolveCollision(node, other);
+                        }                        
                     }
                 });
             }

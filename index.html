@@ -7,6 +7,7 @@
     <script src="./lib/dat.gui.min.js"></script>
     <script type="module" src="main2.js"></script>
     <link rel="stylesheet" href="./common/style.css">
+    <link rel="stylesheet" href="./homePageStyle2.css">
 
     <!-- ce hoces centrirat, daj element, ki ga hoces centrirat v en element k je full screen.
     in ta element, k je full screen more bit flex!! -->
@@ -81,7 +82,7 @@
                 -2px  2px 0 #000,
                  2px  2px 0 #000; */
         }
-
+      
         div#igra {
             position:fixed;
             width:2560px;
@@ -127,7 +128,16 @@
         <div id="health-bar"></div>
         <span id="health-text-right"></span>
     </div>
-    
+
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="gameOverHeading">GAME OVER</p>
+            <p id="survivalTime">You survived for: <span id="timeDisplay">0</span> seconds</p>
+            <button id="replayButton">Replay</button>
+            <button id="homepageButton">Homepage</button>
+        </div>
+    </div>    
 
     <div><img id='podlaga'src="./Gumbi/notificationPodlaga.png" ></div>
     <div><img id='GamePaused'src="./Gumbi/GamePausedText.png" ></div>

@@ -151,3 +151,75 @@ body, html {
     cursor: pointer;
 }
 
+#gameOverModal .close {
+    display: none; /* Hide the close button for GAME OVER modal */
+}
+
+
+#gameOverModal .modal-content {
+    /* Specific styles for GAME OVER modal */
+    /* Add 3D effect similar to the buttons */
+    margin-top: 15vh;
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    text-align: center; /* Ensure text is centered */
+    border: 2px solid #64260f; /* Slightly darker border for a 3D effect */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+    width: 50%; /* Make the modal wider */
+    max-width: 800px; /* Adjust maximum width */
+    height: 65%; /* Make the modal shorter */
+    max-height: 450px; /* Adjust maximum height */
+}
+
+#gameOverHeading {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: 'EmotinalBaggage', sans-serif;
+    color: #ae4119; /* Specific color for headings */
+    font-size: 100px;
+    text-shadow: 0 4px rgba(0, 0, 0, 0.8);
+}
+
+#survivalTime {
+    margin-top: 0px;
+    font-family: 'OctoberNight', sans-serif;
+    color: #ae4119; /* Specific color for headings */
+    font-size: 40px;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.8);
+}
+
+#timeDisplay {
+    margin-top: 0px;
+    font-family: 'OctoberNight', sans-serif;
+    color: #ae4119; /* Specific color for headings */
+    font-size: 60px;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.8);
+}
+
+#gameOverModal button {
+    padding: 5px 25px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    background-color: #ae4119; /* Primary color */
+    border: 2px solid #64260f; /* Slightly darker shade for 3D effect */
+    box-shadow: 
+        0 6px #64260f, /* First shadow: blue shadow for depth */
+        5px 15px 10px rgba(0, 0, 0, 0.5); /* Second shadow: black shadow for cast effect */
+    text-shadow: 0 4px rgba(0, 0, 0, 0.3); /* Optional: Text shadow for more depth */
+    transition: all 0.3s; /* Smooth transition for interactions */
+    font-size: 30px; /* Font size */
+    font-family: 'EmotinalBaggage', sans-serif;
+    color: white; /* Text color */
+}
+
+#gameOverModal button:hover, button:focus {
+    cursor: pointer;
+    background-color: #64260f; /* Slightly darker shade for hover effect */
+    box-shadow: 0 2px #64260f; /* Adjust shadow for pressed effect */
+    transform: translateY(2px); /* Move button down to mimic pressing */
+}
