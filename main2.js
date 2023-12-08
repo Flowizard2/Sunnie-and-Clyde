@@ -875,13 +875,13 @@ function update(time, dt) {
         document.getElementById('timeDisplay').innerText = Math.round(casIgranja * 100) / 100; // Update time
         document.getElementById('gameOverModal').style.display = 'block'; // Show modal
 
-        document.getElementById('replayButton').addEventListener('click', function() {
-            window.location.href = 'index.html';
-        });
+        // document.getElementById('replayButton').addEventListener('click', function() {
+        //     window.location.href = 'index.html';
+        // });
 
-        document.getElementById('homepageButton').addEventListener('click', function() {
-            window.location.href = 'home2.html';
-        });
+        // document.getElementById('homepageButton').addEventListener('click', function() {
+        //     window.location.href = 'home2.html';
+        // });
 
         console.log("GAME OVER!")
     }

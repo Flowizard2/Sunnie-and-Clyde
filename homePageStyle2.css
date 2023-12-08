@@ -101,14 +101,19 @@ body, html {
 
 /* Modal Content */
 .modal-content {
-    background-color: #92d03d;
+    /* display: flex; /* Enable flexbox */
+    /* flex-direction: column; Stack children vertically */
+    /* justify-content: center; Center children vertically */
+    /* align-items: center; Center children horizontally */
+    /* text-align: center; Center text */ 
+    background-color: #90c940;
     border-radius: 20px;
     margin: 5% auto; /* 5% from the top and centered */
     padding: 20px;
     padding-top: 10px;
     border: 2px solid #6e9d2e;
-    width: 30%; /* Could be more or less, depending on screen size */
-    max-width: 400px; /* Maximum width */
+    width: 50%; /* Could be more or less, depending on screen size */
+    max-width: 900px; /* Maximum width */
     height: 70%; /* Adjust to control the height */
     max-height: 600px; /* Maximum height */
     box-shadow: 
@@ -122,8 +127,8 @@ body, html {
     color: #ae4119;
 }
 
-/* If you want to style specific elements like paragraphs or headings */
 .modal-content h2 {
+    text-align: center;
     margin-top: 5px;
     font-family: 'EmotinalBaggage', sans-serif;
     color: #ae4119; /* Specific color for headings */
@@ -158,8 +163,8 @@ body, html {
 
 #gameOverModal .modal-content {
     /* Specific styles for GAME OVER modal */
-    /* Add 3D effect similar to the buttons */
     margin-top: 15vh;
+    background-color: #90c940;
     display: flex; /* Enable flexbox */
     flex-direction: column; /* Stack items vertically */
     align-items: center; /* Center items horizontally */

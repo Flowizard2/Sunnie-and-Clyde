@@ -16,8 +16,8 @@
         #playButton {position:fixed;left:88vw; top:2vh;width:10vw; z-index: 8; }
         #pauseButton {position:fixed;left:88vw; top:2vh;width:10vw; z-index: 10;}
         #podlaga{position:fixed;left:32.5vw; top:30vh;width:35vw; z-index: 10; visibility: hidden;} 
-        #yesButton {position:fixed;left:37.66vw; top:40vh;width:17vw; z-index: 10; visibility:hidden}
-        #noButton {position:fixed;left:46.1vw; top:41vh;width:15vw; z-index: 10;visibility: hidden;}
+        #yesButton {position:fixed;left:42.4vw; top:50.8vh;width:7.6vw; z-index: 10; visibility:hidden}
+        #noButton {position:fixed;left:50.6vw; top:51.3vh;width:7vw; z-index: 10;visibility: hidden;}
         #GamePaused {position:fixed;left:25vw; top:40vh;width:50vw; z-index: 10; visibility: hidden;}
 
         /* #displayArea {
@@ -43,12 +43,16 @@
             border-radius: 100px; /* Optional: for rounded corners */
             overflow: hidden;
             position: relative;
-            left: 45vw;
+            left: 42.5vw;
             top: 6vh;
             z-index: 8;
             /*border: 2px solid #343434;*/
             display: flex; /* Use flexbox for layout */
             align-items: center; /* Center items vertically */
+            border: 2px solid #64260f; /* Slightly darker shade for 3D effect */
+            box-shadow: 
+                0 4px #64260f, /* First shadow: blue shadow for depth */
+                5px 8px 8px rgba(0, 0, 0, 0.5); /* Second shadow: black shadow for cast effect */
         }
 
         #health-bar {
@@ -134,8 +138,8 @@
             <span class="close">&times;</span>
             <p id="gameOverHeading">GAME OVER</p>
             <p id="survivalTime">You survived for: <span id="timeDisplay">0</span> seconds</p>
-            <button id="replayButton">Replay</button>
-            <button id="homepageButton">Homepage</button>
+            <button id="replayButton" onClick="replay()">Replay</button>
+            <button id="homepageButton" onClick="goToHomePage()">Homepage</button>
         </div>
     </div>    
 
@@ -199,6 +203,10 @@
         document.getElementById("yesButton").style.visibility = "hidden";
         document.getElementById("noButton").style.visibility = "hidden";
         document.getElementById("GamePaused").style.visibility = "visible";
+    }
+
+    function replay() {
+        window.location.href = 'index.html';
     }
 
     window.addEventListener('resize', () => {
