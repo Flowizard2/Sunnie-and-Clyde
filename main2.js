@@ -29,6 +29,7 @@ import { Light } from './Light.js';
 
 window.onload = function() {
     var audioElement = document.getElementById("pesem");
+    audioElement.volume = 0.05;
     
     // Play audio, but be prepared for it to be blocked due to browser's autoplay policy
     audioElement.play().catch(function(error) {
@@ -36,8 +37,9 @@ window.onload = function() {
     });
 }
 
-var itemBadPickUp = new Audio("./Sounds/itemBadpickUp2.mp3");
+var itemBadPickUp = new Audio("./Sounds/itemBadpickUp4.mp3");
 var itemGoodPickUp = new Audio("./Sounds/itemGoodPickUp.mp3");
+itemGoodPickUp.volume = 0.2;
 var sunnieCollisionSound = new Audio("./Sounds/sunnieCollision2.wav");
 
 const canvas = document.querySelector('canvas');
