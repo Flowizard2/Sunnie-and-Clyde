@@ -571,8 +571,6 @@ function aktivirajPowerUp(tile) {
 }
 
 
-
-
 // Tabela tile-ov za sonce
 const rows = 72;
 const columns = 3;
@@ -717,6 +715,11 @@ let casIgranja = 0.0;
 
 let prejsnjiClydeSunnieCollision = false;
 
+// Animacija power upov
+let originalY = bucket.getComponentOfType(Transform).translation[1];
+let amplitude = 0.3;
+let frequency = 3.5;
+
 
 function update(time, dt) {
     //console.log("Cilj: ", sunnieCilj);
@@ -731,12 +734,24 @@ function update(time, dt) {
     physics.update(time, dt);
     //console.log(aliJePavza);
 
+    
+
     let stPosusenihPolj = prestejPobarvaneTile();
     let healthPercentage = updateHealthBar(stPosusenihPolj);
 
     if(aliJePavza) {
 
     } else if(healthPercentage > 0) {
+
+        // Animacija power upov
+        bucket.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
+        ogenj.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
+        ogenj1.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
+        ogenj2.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
+        stopwatch.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
+        stopwatch1.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
+        stopwatch2.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
+        healthpack.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
 
         if(time > 5) {
             vsotaDt += dt;
