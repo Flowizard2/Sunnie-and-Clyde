@@ -27,8 +27,9 @@ import { Physics } from './Physics.js';
 import { Renderer } from './Renderer.js';
 import { Light } from './Light.js';
 
+let audioElement = document.getElementById("pesem");
 window.onload = function() {
-    var audioElement = document.getElementById("pesem");
+    // var audioElement = document.getElementById("pesem");
     audioElement.volume = 0.03;
     
     // Play audio, but be prepared for it to be blocked due to browser's autoplay policy
@@ -747,9 +748,10 @@ function update(time, dt) {
 
     if(aliJePavza) {
         casVPavzi += dt;
+        audioElement.pause();
 
     } else if(healthPercentage > 0) {
-
+        audioElement.play();
         // Animacija power upov
         //bucket.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
         ogenj.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
