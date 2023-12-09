@@ -29,7 +29,7 @@ import { Light } from './Light.js';
 
 window.onload = function() {
     var audioElement = document.getElementById("pesem");
-    audioElement.volume = 0.05;
+    audioElement.volume = 0.03;
     
     // Play audio, but be prepared for it to be blocked due to browser's autoplay policy
     audioElement.play().catch(function(error) {
