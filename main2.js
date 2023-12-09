@@ -717,8 +717,8 @@ let prejsnjiClydeSunnieCollision = false;
 
 // Animacija power upov
 let originalY = bucket.getComponentOfType(Transform).translation[1];
-let amplitude = 0.3;
-let frequency = 3.5;
+let amplitude = 0.04;
+let frequency = 6;
 
 
 function update(time, dt) {
@@ -744,7 +744,7 @@ function update(time, dt) {
     } else if(healthPercentage > 0) {
 
         // Animacija power upov
-        bucket.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
+        //bucket.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
         ogenj.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
         ogenj1.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
         ogenj2.getComponentOfType(Transform).translation[1] = originalY + amplitude * Math.sin(frequency * time);
