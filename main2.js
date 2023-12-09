@@ -38,6 +38,7 @@ window.onload = function() {
 
 var itemBadPickUp = new Audio("./Sounds/itemBadpickUp2.mp3");
 var itemGoodPickUp = new Audio("./Sounds/itemGoodPickUp.mp3");
+var sunnieCollisionSound = new Audio("./Sounds/sunnieCollision2.wav");
 
 const canvas = document.querySelector('canvas');
 //TT const renderer = new UnlitRenderer(canvas);
@@ -263,7 +264,9 @@ sunnie.isDynamic = true;
 //     translation: [-1.558300256729126,
 //         1.6659927368164062,
 //         4.757515907287598] }));
-const sunniePosition = sunnie.getComponentOfType(Transform).translation
+let sunniePosition = sunnie.getComponentOfType(Transform).translation
+sunniePosition[0] = -8.6597;
+sunniePosition[2] = -4.5114;
 
 // loader.loadNode('Circle').isStatic = true;
 // loader.loadNode('Circle.001').isStatic = true;
@@ -720,6 +723,7 @@ let originalY = bucket.getComponentOfType(Transform).translation[1];
 let amplitude = 0.04;
 let frequency = 6;
 
+let casVPavzi = 0;
 
 function update(time, dt) {
     //console.log("Cilj: ", sunnieCilj);
@@ -740,6 +744,7 @@ function update(time, dt) {
     let healthPercentage = updateHealthBar(stPosusenihPolj);
 
     if(aliJePavza) {
+        casVPavzi += dt;
 
     } else if(healthPercentage > 0) {
 
@@ -876,6 +881,8 @@ function update(time, dt) {
             if(!prejsnjiClydeSunnieCollision) { // Ce se je zgodil nov collision, odbijemo tocke.
                 collisionKazen += 2;
                 spremeniBarvoHealthbara('rdeca');
+                // Predvajaj zvok
+                sunnieCollisionSound.play();
             }
 
             prejsnjiClydeSunnieCollision = true;
@@ -928,7 +935,7 @@ function update(time, dt) {
         gameOver = true;
         
         if(!gameOverTime) {
-            casIgranja = time;
+            casIgranja = time - casVPavzi;
             gameOverTime = true;
         }
 
